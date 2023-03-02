@@ -171,6 +171,27 @@ public:
         return 0;
     }
 
+    int transmitBytes(const uint8_t *data, size_t len)
+    {
+        try
+        {
+            for (size_t i = 0; i < len; i++)
+                serialPort->WriteByte(data[i]);
+            serialPort->DrainWriteBuffer();
+        }
+        catch (const std::runtime_error &)
+        {
+            std::cerr << "The Write() runtime_error." << std::endl;
+            return -2;
+        }
+        catch (const NotOpen &)
+        {
+            std::cerr << "Port Not Open ..." << std::endl;
+            return -1;
+        }
+        return 0;
+    }
+
     /**
      * @brief 启动串口通信
      *

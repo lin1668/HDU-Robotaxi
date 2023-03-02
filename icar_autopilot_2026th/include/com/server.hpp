@@ -86,6 +86,10 @@ public:
         }
         uart.startReceive(); // 启动数据接收子线程
 
+        // 发送初始激活帧，避免STM32首帧丢失
+        uint8_t initFrame[6] = {0xAA, 0x00, 0x00, 0x00, 0x5A, 0xDD};
+        uart.transmitBytes(initFrame, 6);
+
         // 创建套接字
         if ((socketId = socket(AF_INET, SOCK_STREAM, 0)) == 0)
         {
@@ -165,14 +169,10 @@ public:
 
         startApp = true;
         countDrop = 0;
-        // 发送至串口通信
-        if (len >= 4 && len <= 30)
+        // 发送至串口通信：只转发 0xAA 协议帧（批量发送，避免逐字节卡死STM32）
+        if (len >= 6 && len <= 30 && (unsigned char)buffer[0] == 0xAA)
         {
-            for (int i = 0; i < len; i++)
-            {
-                uint8_t u8 = static_cast<uint8_t>(buffer[i]);
-                uart.transmitByte(u8);
-            }
+            uart.transmitBytes((const uint8_t *)buffer, len);
         }
     }
 

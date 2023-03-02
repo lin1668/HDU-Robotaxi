@@ -186,12 +186,16 @@ public:
      */
     void transmit(uint8_t *buff, int len)
     {
+        fprintf(stderr, "[TX] ");
+        for (int i = 0; i < len; i++)
+            fprintf(stderr, "%02x ", buff[i]);
+        fprintf(stderr, "\n");
+        
         char data[len];
-        memcpy(data, buff, len); // 拷贝内存数据，防止“\0”数据丢失
-
-        // 发送消息到服务器
+        memcpy(data, buff, len);
         send(socketId, data, len, 0);
     }
+
 
     /**
      * @brief 速度+方向控制
@@ -199,37 +203,35 @@ public:
      * @param speed 速度：m/s
      * @param servo 方向：PWM（500~2500）
      */
-    void carControl(float speed, uint16_t servo)
-    {
-        countInit++;
-        if (countInit >= 50)
-            countInit = 50;
-        else
-            speed = 0.0; // 初始化速度为0，等待1s发车
+void carControl(float speed, uint16_t servo)
+{
+    countInit++;
+    if (countInit >= 50)
+        countInit = 50;
+    else
+        { // speed = 0.0;
+        }
 
-        uint8_t buff[11];  // 多发送一个字节
-        uint8_t check = 0; // 校验位
-        Bit32Union bit32U;
-        Bit16Union bit16U;
+    uint16_t mcSpeed = (uint16_t)(speed * 100.0f);
+    if (mcSpeed > 100) mcSpeed = 100;
 
-        buff[0] = USB_FRAME_HEAD;   // 通信帧头
-        buff[1] = USB_ADDR_CARCTRL; // 地址
-        buff[2] = 10;               // 帧长
+    uint16_t mcServo;
+    if (servo <= 1100) mcServo = 60;
+    else if (servo >= 1900) mcServo = 120;
+    else mcServo = 90 + (int16_t)(servo - 1500) * 30 / 400;
 
-        bit32U.float32 = speed; // X轴线速度
-        for (int i = 0; i < 4; i++)
-            buff[i + 3] = bit32U.buff[i];
+    fprintf(stderr, "[NEW] mcSpeed=%d mcServo=%d\n", mcSpeed, mcServo);
 
-        bit16U.uint16 = servo; // Y轴线速度
-        buff[7] = bit16U.buff[0];
-        buff[8] = bit16U.buff[1];
+    uint8_t buff[6];
+    buff[0] = 0xAA;
+    buff[1] = mcSpeed & 0xFF;
+    buff[2] = (mcSpeed >> 8) & 0xFF;
+    buff[3] = (mcServo >> 8) & 0xFF;
+    buff[4] = mcServo & 0xFF;
+    buff[5] = 0xDD;
 
-        for (int i = 0; i < 9; i++)
-            check += buff[i];
-        buff[9] = check; // 校验位
-
-        transmit(buff, 11); // 发送数据
-    }
+    transmit(buff, 6);
+}
 
     /**
      * @brief 蜂鸣器音效控制

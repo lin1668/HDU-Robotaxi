@@ -49,7 +49,7 @@ int main(int argc, char const *argv[])
                 server.startApp = false;
         }
         else
-            server.uart.sendHeart(); // 发送心跳信号
+            // server.uart.sendHeart(); // 发送心跳信号
 
         usleep(200 * 1000); // us延迟
 

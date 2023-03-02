@@ -405,10 +405,12 @@ public:
             printf("[Error]: Socket init failed!!!\n");
             exit(-1);
         }
-        client->buzzerSound(client->BUZZER_OK); // 提示音效
+        // client->buzzerSound(client->BUZZER_OK); // 提示音效
 
         // 相机初始化
         // USB摄像头初始化
+        printf("[Debug] in [08], debug=%d manual=%d\n", params->config.debug, params->manualTakeover);
+        fflush(stdout);
         if (params->config.debug)
             capture = make_shared<cv::VideoCapture>(params->config.video); // 打开本地视频
         else
@@ -571,6 +573,7 @@ public:
         }
         else // 实车控制
         {
+
             // 无论手动/自动模式，每帧发送控制指令（MCU需要持续PWM更新）
             client->carControl(params->ctrl.speed, params->ctrl.servo);
         }
