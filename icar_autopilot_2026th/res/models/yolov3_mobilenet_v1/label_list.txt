@@ -1,0 +1,12 @@
+cone
+person
+busy
+limit
+unlimit
+park
+gate
+cross
+fork
+left
+choice
+station
