@@ -1,0 +1,127 @@
+[
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/icar.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/icar.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/icar.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/ctrl/center.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/center.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/center.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/ctrl/track.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/track.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/track.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/busy.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/busy.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/busy.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/cross.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/cross.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/cross.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/fork.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/fork.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/fork.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/park.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/park.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/park.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/slow.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/slow.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/slow.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/station.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/station.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/station.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/stop.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/stop.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/stop.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/icar.dir/src/fsm/yfork.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/collection.dir/src/tool/collection.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/collection.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/collection.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/camera.dir/src/tool/camera.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/camera.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/camera.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/camera.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/img2video.dir/src/tool/img2video.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/img2video.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/img2video.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/boot.dir/src/tool/boot.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/boot.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/boot.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/calibration.dir/src/tool/calibration.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/calibration.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/calibration.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/imging.dir/src/tool/imging.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/imging.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/imging.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/imging.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/detection.dir/src/tool/detection.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/detection.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/tool/detection.cpp"
+},
+{
+  "directory": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include",
+  "command": "/usr/bin/c++   -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx  -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-variable -g   -std=gnu++1z -o CMakeFiles/detection.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp",
+  "file": "/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp"
+}
+]

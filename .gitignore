@@ -6,3 +6,5 @@
 
 # 忽略 boost 编译生成的整个目录
 boost_1_79_0/
+src/speech/llm.py
+src/visual/visual.py

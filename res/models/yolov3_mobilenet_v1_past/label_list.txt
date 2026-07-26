@@ -1,0 +1,15 @@
+cone
+person
+icar
+busy
+curve
+limit
+unlimit
+stop
+flow
+park
+gate
+cross
+fork
+left
+choice

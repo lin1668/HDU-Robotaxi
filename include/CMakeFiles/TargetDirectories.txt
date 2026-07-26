@@ -1,0 +1,10 @@
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/rebuild_cache.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/edit_cache.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/icar.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/collection.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/camera.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/img2video.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/boot.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/calibration.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/imging.dir
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea75/workspace/icar_autopilot_2026th/include/CMakeFiles/detection.dir
