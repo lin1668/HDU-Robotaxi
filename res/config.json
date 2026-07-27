@@ -1,6 +1,6 @@
 {
   "通用配置参数": {
-    "velLow": 0.3,
+    "velLow": 0.2,
     "velHigh": 0.5,
     "velSlow": 0.25,
     "velPark": 0.3,
@@ -8,11 +8,11 @@
     "velBusy": 0.4,
     "velStop": 0.4,
     "velCross": 0.4,
-    "velYfork": 0.4,
+    "velYfork": 0.2,
     "runP1": 2.2,
-    "runP2": 0.012,
-    "turnP": 3.5,
-    "turnD": 2.5,
+    "runP2": 0.006,
+    "turnP": 3,
+    "turnD": 2.7,
     "debug": false,
     "saveImg": true,
     "saveIpm": false,
@@ -62,7 +62,7 @@
       "yforkLeft": false,
       "manualTakeover": true,
       "busyStopEnable": true,
-      "busyStopPoint": 2
+      "busyStopPoint": 1
     },
     "lap3": {
       "park": true,

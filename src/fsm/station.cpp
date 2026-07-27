@@ -136,7 +136,7 @@ void FsmStation::run(Mat &img)
                 {
                     int boxCx = params->results[i].x + params->results[i].width / 2;
                     int boxBottom = params->results[i].y + params->results[i].height;
-                    if (boxCx < COLSIMAGE / 2 && boxBottom > ROWSIMAGE * 0.5)
+                    if (boxCx < COLSIMAGE / 2 && boxBottom > ROWSIMAGE * 0.9)
                     {
                         params->stationStarted = true;
                         pressTimer = 1;

@@ -65,6 +65,13 @@ private:
     int holdRow = 0;            // 最后已知V尖行
     int holdCol = 0;            // 最后已知V尖列
     int vlossTimer = 0;         // V尖消失后保持引导的帧计数
+    int forceLeftTimer = 0;     // 强制左转剩余帧数
+    bool forceLeftDone = false; // 强制左转已执行过（每圈只执行一次）
+
+    // ===== 可调参数 =====
+    // 强制左转持续帧数（30帧≈1秒，调大转得更久，调小转得更短）
+    static constexpr int FORCE_LEFT_FRAMES = 20;
+    // ====================
 
     void reset(void);
     bool handle(Mat &img);
