@@ -370,7 +370,7 @@ bool FsmYfork::handle(Mat &img)
         }
 
         // 超时退出（启用了station等多等帧等停车+突变）
-        int exitTimeout = stationEnabled ? 500 : 240;
+        int exitTimeout = stationEnabled ? 300 : 120;
         if (timeout > exitTimeout)
         {
             ylog("[Yfork] ENTER: TIMEOUT timeout=%d > %d (station=%d) -> EXIT",
