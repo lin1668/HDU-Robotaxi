@@ -71,6 +71,7 @@ struct Control
     int countAcc = 500;           // 缓加速计数器
     int outlineCooldown = 0;      // outlineCheck冷却计数器（停车场出库后暂时禁用）
     bool yforkReset = false;      // Y型岔路复位标志（park退出时设置）
+    bool busyCrossSlow = false;   // busy圈斑马线消失后减速到0.3
 };
 /**
  * @brief 控制器核心参数

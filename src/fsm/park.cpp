@@ -452,7 +452,7 @@ void FsmPark::run(Mat &img)
         pointsEdgeLeftPast.push_back(params->track->pointsEdgeLeft); // 记录入库路径
         pointsEdgeRightPast.push_back(params->track->pointsEdgeRight);
 
-        if (timeout > 30)           // 转向超时
+        if (timeout > 26)           // 转向超时
             setStep(Step::PARKING); // 停车完成
         break;
     }

@@ -217,14 +217,14 @@ void carControl(float speed, uint16_t servo)
         {  speed = 0.0;
         }
 
-    int16_t mcSpeed = (int16_t)(speed * 100.0f * 0.9f);
+    int16_t mcSpeed = (int16_t)(speed * 100.0f);
     if (mcSpeed > 60) mcSpeed = 60;
     if (mcSpeed < -60) mcSpeed = -60;
 
     uint16_t mcServo;
-    if (servo <= 1100) mcServo = 115;
-    else if (servo >= 1900) mcServo = 65;
-    else mcServo = 90 - (int16_t)(servo - 1500) * 25 / 400;
+    if (servo <= 1100) mcServo = 117;
+    else if (servo >= 1900) mcServo = 63;
+    else mcServo = 90 - (int16_t)(servo - 1500) * 27 / 400;
 
     fprintf(stderr, "[NEW] mcSpeed=%d mcServo=%d buzzer=%d\n", mcSpeed, mcServo, buzzerFlag);
 

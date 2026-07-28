@@ -65,12 +65,16 @@ private:
     int holdRow = 0;            // 最后已知V尖行
     int holdCol = 0;            // 最后已知V尖列
     int vlossTimer = 0;         // V尖消失后保持引导的帧计数
-    int forceLeftTimer = 0;     // 强制左转剩余帧数
-    bool forceLeftDone = false; // 强制左转已执行过（每圈只执行一次）
+    int forceLeftTimer = 0;       // 强制左转剩余帧数
+    bool forceLeftDone = false;   // 强制左转已执行过（每圈只执行一次）
+    int forkForceLeftTimer = 0;   // FORK达到比例后计时（也用于自动停车）
+    int yforkParkStopCount = 0;   // 自动停车持续帧数
 
     // ===== 可调参数 =====
-    // 强制左转持续帧数（30帧≈1秒，调大转得更久，调小转得更短）
-    static constexpr int FORCE_LEFT_FRAMES = 20;
+    static constexpr int FORCE_LEFT_FRAMES = 14;          // 强制左转持续帧数
+    static constexpr float FORK_FORCE_LEFT_RATIO = 0.35f; // FORK到画面X%开始计时
+    static constexpr int FORK_FORCE_LEFT_DELAY = 16;      // 达到比例后等N帧强制左转
+    static constexpr int FORK_AUTO_STOP_DELAY = 50;      // 达到比例后等N帧自动停车（同时计时，>左转延迟）
     // ====================
 
     void reset(void);

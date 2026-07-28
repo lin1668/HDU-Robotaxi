@@ -56,6 +56,10 @@ private:
     int stationBoxCounter = 0;      // 跳过计数（施工区busyStopPoint选择用）
     bool stationBoxCounted = false; // 当前框已计数标志（防止重复计数同一框）
     int busyEntryDelay = 0;         // 施工区进入后延迟检测（帧数）
+    int leftBranchDelay = 0;        // 左分支框过半后延迟（帧数）
+
+    // 可调：框过半后等多少帧才开始停车
+    static constexpr int LEFT_BRANCH_DELAY_FRAMES = 15;
 
     void setStep(Step st);
 };

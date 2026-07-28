@@ -1,58 +1,92 @@
-[15:47:08] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:08] [Yfork] NONE: canForceLeft=true but no station box found (results=0)
-[15:47:09] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:09] [Yfork] NONE: canForceLeft=true but no station box found (results=0)
-[15:47:10] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:10] [Yfork] NONE: canForceLeft=true but no station box found (results=0)
-[15:47:11] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:11] [Yfork] NONE: canForceLeft=true but no station box found (results=0)
-[15:47:13] [Yfork] NONE: AI results count=1 labels=[10 ]
-[15:47:13] [Yfork] NONE: canForceLeft=true but no station box found (results=1)
-[15:47:14] [Yfork] NONE: AI results count=1 labels=[10 ]
-[15:47:14] [Yfork] NONE: canForceLeft=true but no station box found (results=1)
-[15:47:15] [Yfork] NONE: AI results count=1 labels=[0 ]
-[15:47:15] [Yfork] NONE: canForceLeft=true but no station box found (results=1)
-[15:47:16] [Yfork] detect: FORK ACCEPT y=153 h=67 w=95 bottom=220
-[15:47:16] [Yfork] NONE: fork detected, forkSeen=true
-[15:47:16] [Yfork] NONE: AI results count=1 labels=[8 ]
-[15:47:16] [Yfork] NONE: canForceLeft=true but no station box found (results=1)
-[15:47:16] [Yfork] detect: FORK ACCEPT y=167 h=67 w=70 bottom=234
-[15:47:16] [Yfork] NONE: fork detected, forkSeen=true
-[15:47:16] [Yfork] NONE: forkSeen but no V-tip yet (cnt=1)
-[15:47:16] [Yfork] NONE: forkSeen but no V-tip yet (cnt=11)
-[15:47:17] [Yfork] NONE: FORCE LEFT TRIGGER station box #1 cx=40 y=0 h=64 w=70 bottom=64, forceFrames=20 -> ENTER (one-shot)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=1/20 (remaining=19), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=2/20 (remaining=18), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=3/20 (remaining=17), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=4/20 (remaining=16), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=5/20 (remaining=15), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=6/20 (remaining=14), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=7/20 (remaining=13), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=8/20 (remaining=12), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=9/20 (remaining=11), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=10/20 (remaining=10), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=11/20 (remaining=9), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=12/20 (remaining=8), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=13/20 (remaining=7), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=14/20 (remaining=6), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=15/20 (remaining=5), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=16/20 (remaining=4), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=17/20 (remaining=3), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=18/20 (remaining=2), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=19/20 (remaining=1), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT frame=20/20 (remaining=0), Bezier left edge start=(230,60) end=(80,1)
-[15:47:17] [Yfork] ENTER: FORCE LEFT FINISHED, normal guidance resumes
-[15:47:18] [Yfork] V-tip lost (bottom): row=172 col=186 (spurroad=1, threshold=168)
-[15:47:18] [Yfork] replan: hold expired (vlossTimer=18 >= 18), releasing guidance
-[15:47:28] [Yfork] ENTER: LEFT edge MUTATION cur=147 prev=116 diff=31 -> EXIT
-[15:47:28] [Yfork] NONE: force left DISABLED (yfork=1 lapYfork=1 yforkLeft=1 forceLeftDone=1)
-[15:47:28] [Yfork] NONE: AI results count=1 labels=[0 ]
-[15:47:29] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:30] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:31] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:31] [Yfork] NONE: force left DISABLED (yfork=1 lapYfork=1 yforkLeft=1 forceLeftDone=1)
-[15:47:32] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:33] [Yfork] NONE: AI results count=0 labels=[]
-[15:47:34] [Yfork] NONE: AI results count=2 labels=[4 7 ]
-[15:47:35] [Yfork] NONE: force left DISABLED (yfork=1 lapYfork=1 yforkLeft=1 forceLeftDone=1)
-[15:47:35] [Yfork] NONE: AI results count=3 labels=[0 7 7 ]
+[21:06:51] [Yfork] NONE: AI results count=0 labels=[]
+[21:06:51] [Yfork] NONE: canForceLeft=true but no station box found (results=0)
+[21:06:52] [Yfork] NONE: AI results count=1 labels=[7 ]
+[21:06:52] [Yfork] NONE: canForceLeft=true but no station box found (results=1)
+[21:06:53] [Yfork] NONE: AI results count=0 labels=[]
+[21:06:53] [Yfork] NONE: canForceLeft=true but no station box found (results=0)
+[21:06:55] [Yfork] NONE: AI results count=1 labels=[10 ]
+[21:06:55] [Yfork] NONE: canForceLeft=true but no station box found (results=1)
+[21:06:56] [Yfork] NONE: AI results count=0 labels=[]
+[21:06:56] [Yfork] NONE: canForceLeft=true but no station box found (results=0)
+[21:06:57] [Yfork] detect: FORK ACCEPT y=64 h=33 w=76 bottom=97
+[21:06:57] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:57] [Yfork] NONE: FORK passed 35% (bottom=97), start timer
+[21:06:58] [Yfork] detect: FORK ACCEPT y=68 h=33 w=87 bottom=101
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=73 h=33 w=93 bottom=106
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=80 h=33 w=79 bottom=113
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=84 h=33 w=79 bottom=117
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=81 h=67 w=98 bottom=148
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=99 h=33 w=93 bottom=132
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=105 h=33 w=79 bottom=138
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] NONE: AI results count=1 labels=[8 ]
+[21:06:58] [Yfork] NONE: canForceLeft=true but no station box found (results=1)
+[21:06:58] [Yfork] detect: FORK ACCEPT y=103 h=43 w=79 bottom=146
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=98 h=67 w=109 bottom=165
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=111 h=40 w=109 bottom=151
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=98 h=67 w=109 bottom=165
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=101 h=67 w=113 bottom=168
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=103 h=67 w=116 bottom=170
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=103 h=67 w=116 bottom=170
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=107 h=67 w=116 bottom=174
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] NONE: FORK timer=16/16
+[21:06:58] [Yfork] detect: FORK ACCEPT y=108 h=67 w=116 bottom=175
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=116 h=67 w=116 bottom=183
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=122 h=67 w=116 bottom=189
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=127 h=67 w=116 bottom=194
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=140 h=67 w=115 bottom=207
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=129 h=109 w=116 bottom=238
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:58] [Yfork] detect: FORK ACCEPT y=153 h=67 w=116 bottom=220
+[21:06:58] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:59] [Yfork] detect: FORK ACCEPT y=155 h=67 w=116 bottom=222
+[21:06:59] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:59] [Yfork] detect: FORK ACCEPT y=167 h=67 w=116 bottom=234
+[21:06:59] [Yfork] NONE: fork detected, forkSeen=true
+[21:06:59] [Yfork] NONE: FORCE LEFT TRIGGER by FORK (timer=0 >= 16), forceFrames=14 -> ENTER
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=1/14 (remaining=13), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=2/14 (remaining=12), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=3/14 (remaining=11), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=4/14 (remaining=10), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=5/14 (remaining=9), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=6/14 (remaining=8), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=7/14 (remaining=7), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=8/14 (remaining=6), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=9/14 (remaining=5), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=10/14 (remaining=4), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=11/14 (remaining=3), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=12/14 (remaining=2), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=13/14 (remaining=1), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT frame=14/14 (remaining=0), Bezier left edge start=(230,60) end=(80,1)
+[21:06:59] [Yfork] ENTER: FORCE LEFT FINISHED, normal guidance resumes
+[21:07:00] [Yfork] V-tip lost (bottom): row=173 col=306 (spurroad=1, threshold=168)
+[21:07:01] [Yfork] replan: hold expired (vlossTimer=18 >= 18), releasing guidance
+[21:07:08] [Yfork] ENTER: TIMEOUT timeout=201 > 200 (station=1) -> EXIT
+[21:07:08] [Yfork] EXIT -> END
+[21:07:08] [Yfork] END (completed)
+[21:07:08] [Yfork] NONE: force left DISABLED (yfork=1 lapYfork=1 yforkLeft=1 forceLeftDone=1)
+[21:07:08] [Yfork] NONE: AI results count=1 labels=[8 ]
+[21:07:10] [Yfork] NONE: AI results count=0 labels=[]
+[21:07:11] [Yfork] NONE: AI results count=0 labels=[]
+[21:07:12] [Yfork] NONE: force left DISABLED (yfork=1 lapYfork=1 yforkLeft=1 forceLeftDone=1)
+[21:07:13] [Yfork] NONE: AI results count=0 labels=[]
+[21:07:14] [Yfork] NONE: AI results count=1 labels=[7 ]

@@ -106,7 +106,8 @@ public:
         }
         else if (params->mode == FsmMode::YFORK) // Y型岔路口速度
         {
-            params->ctrl.speed = params->config.velYfork;
+            // 右分支不减速，走正常最高速；左分支用 velYfork
+            params->ctrl.speed = (params->yforkBranch == 2) ? params->config.velHigh : params->config.velYfork;
             return;
         }
         else if (params->ctrl.slow) // 减速区速度

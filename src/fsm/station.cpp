@@ -123,26 +123,37 @@ void FsmStation::run(Mat &img)
             break;
         }
 
-        // 左岔路：引导结束见框开始计时（要求框到底部0.5以下，给足时间完成左转）
+        // 左岔路：引导结束见框开始计时（框过0.5后延迟N帧再停）
         if (params->yforkBranch == 1)
         {
             // 引导期间不检测
             if (params->yforkGuiding)
                 break;
 
+            bool boxSeen = false;
             for (int i = 0; i < params->results.size(); i++)
             {
                 if (params->results[i].type == LABEL_STATION)
                 {
                     int boxCx = params->results[i].x + params->results[i].width / 2;
                     int boxBottom = params->results[i].y + params->results[i].height;
-                    if (boxCx < COLSIMAGE / 2 && boxBottom > ROWSIMAGE * 0.9)
+                    if (boxCx < COLSIMAGE / 2 && boxBottom > ROWSIMAGE * 0.3)
                     {
-                        params->stationStarted = true;
-                        pressTimer = 1;
-                        printf("[Station] Left branch, seen, 0.3s stop\n");
+                        boxSeen = true;
                         break;
                     }
+                }
+            }
+
+            if (boxSeen)
+            {
+                leftBranchDelay++;
+                if (leftBranchDelay >= LEFT_BRANCH_DELAY_FRAMES)
+                {
+                    params->stationStarted = true;
+                    pressTimer = 1;
+                    leftBranchDelay = 0;
+                    printf("[Station] Left branch, delay=%d done, 0.3s stop\n", LEFT_BRANCH_DELAY_FRAMES);
                 }
             }
         }
@@ -241,6 +252,7 @@ void FsmStation::setStep(Step st)
     step = st;
     stopCounter = 0;
     pressTimer = 0;
+    leftBranchDelay = 0;
     params->ctrl.stop = false;
 }
 
