@@ -1,0 +1,66 @@
+[12:25:44] BUSY LOG START
+[12:26:19] TAKEOVER_END busy=1 target=2 entryDelay=10 boxCounter=0 counted=0 branch=0 guiding=0
+[12:26:20] FRAME target=2 boxes=2 maxBottom=132 threshold=108 pass=1 counter=0 counted=0 entryDelay=10 cooldown=0 press=0 completed=0 branch=0 guiding=0 ctrlStop=0 speed=0.35
+[12:26:20] BLOCKED entryDelay=10 target=2 boxCounter=0
+[12:26:20] BLOCKED entryDelay=1 target=2 boxCounter=0
+[12:26:20] SKIP_BOX skipped=1 target=2 bottom=205 threshold=108; waiting disappearance
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=211 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=215 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=224 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=229 threshold=110
+[12:26:20] FRAME target=2 boxes=2 maxBottom=238 threshold=110 pass=1 counter=1 counted=1 entryDelay=0 cooldown=0 press=0 completed=0 branch=0 guiding=0 ctrlStop=0 speed=0.35
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:20] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:21] WAIT_BOX bottom=78 threshold=110 target=2 counter=1 counted=1 completed=0
+[12:26:21] FRAME target=2 boxes=1 maxBottom=78 threshold=110 pass=0 counter=1 counted=1 entryDelay=0 cooldown=0 press=0 completed=0 branch=0 guiding=0 ctrlStop=0 speed=0.35
+[12:26:21] FRAME target=2 boxes=1 maxBottom=109 threshold=110 pass=0 counter=1 counted=1 entryDelay=0 cooldown=0 press=0 completed=0 branch=0 guiding=0 ctrlStop=0 speed=0.35
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=111 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=114 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=117 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=120 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=122 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=124 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=126 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=127 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=133 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=160 threshold=110
+[12:26:21] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=163 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=166 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=187 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=189 threshold=110
+[12:26:22] FRAME target=2 boxes=1 maxBottom=167 threshold=110 pass=1 counter=1 counted=1 entryDelay=0 cooldown=0 press=0 completed=0 branch=0 guiding=0 ctrlStop=0 speed=0.35
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=167 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=200 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=205 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=213 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=214 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=224 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=229 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=232 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=237 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=237 threshold=110
+[12:26:22] BLOCKED waiting_box_disappear target=2 boxCounter=1 bottom=238 threshold=110
+[12:26:22] BOX_DISAPPEARED release_counted=1 boxCounter=1 target=2
+[12:26:22] TARGET_BOX_TRIGGER target=2 boxCounter=1 bottom=238 threshold=110 pressTimer=1 branch=0
+[12:26:22] PRESS timer=2 threshold=10 target=2 counter=1 branch=0 ctrlStop=0 speed=0.30
+[12:26:22] FRAME target=2 boxes=1 maxBottom=238 threshold=110 pass=1 counter=1 counted=0 entryDelay=0 cooldown=0 press=4 completed=0 branch=0 guiding=0 ctrlStop=0 speed=0.30
+[12:26:22] PRESS timer=10 threshold=10 target=2 counter=1 branch=0 ctrlStop=0 speed=0.30
+[12:26:22] PRESS timer=11 threshold=10 target=2 counter=1 branch=0 ctrlStop=0 speed=0.30
+[12:26:22] STOP_TRIGGER timer=11 threshold=10 target=2 counter=1 branch=0 beforeStop=0 beforeSpeed=0.30
+[12:26:22] STOP_SET ctrlStop=1 speed=0.00 step=STOP
+[12:26:22] STOP_HOLD hold=1/30 ctrlStop=1 speed=0.00 target=2 counter=1 branch=0
+[12:26:23] STOP_HOLD hold=30/30 ctrlStop=1 speed=0.00 target=2 counter=1 branch=0
+[12:26:23] STOP_HOLD hold=31/30 ctrlStop=1 speed=0.00 target=2 counter=1 branch=0
+[12:26:23] STOP_COMPLETE hold=31 target=2 boxCounter=1 branch=0
+[12:26:23] BLOCK cooldown=6 target=2 counter=1 boxes=0 ctrlStop=0 speed=0.35
+[12:26:24] BLOCK cooldown=1 target=2 counter=1 boxes=0 ctrlStop=0 speed=0.35

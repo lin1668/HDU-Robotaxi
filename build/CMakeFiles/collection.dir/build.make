@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th
+CMAKE_SOURCE_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build
+CMAKE_BINARY_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/collection.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/collection.dir/flags.make
 
 CMakeFiles/collection.dir/src/tool/collection.cpp.o: CMakeFiles/collection.dir/flags.make
 CMakeFiles/collection.dir/src/tool/collection.cpp.o: ../src/tool/collection.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/collection.dir/src/tool/collection.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/collection.dir/src/tool/collection.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/tool/collection.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/collection.dir/src/tool/collection.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/collection.dir/src/tool/collection.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/tool/collection.cpp
 
 CMakeFiles/collection.dir/src/tool/collection.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/collection.dir/src/tool/collection.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/tool/collection.cpp > CMakeFiles/collection.dir/src/tool/collection.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/tool/collection.cpp > CMakeFiles/collection.dir/src/tool/collection.cpp.i
 
 CMakeFiles/collection.dir/src/tool/collection.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/collection.dir/src/tool/collection.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/tool/collection.cpp -o CMakeFiles/collection.dir/src/tool/collection.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/tool/collection.cpp -o CMakeFiles/collection.dir/src/tool/collection.cpp.s
 
 CMakeFiles/collection.dir/src/tool/collection.cpp.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/collection.dir/src/tool/collection.cpp.o.provides.build: CMakeFiles/c
 
 CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o: CMakeFiles/collection.dir/flags.make
 CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o: ../src/ctrl/predeal.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp
 
 CMakeFiles/collection.dir/src/ctrl/predeal.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/collection.dir/src/ctrl/predeal.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp > CMakeFiles/collection.dir/src/ctrl/predeal.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp > CMakeFiles/collection.dir/src/ctrl/predeal.cpp.i
 
 CMakeFiles/collection.dir/src/ctrl/predeal.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/collection.dir/src/ctrl/predeal.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp -o CMakeFiles/collection.dir/src/ctrl/predeal.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp -o CMakeFiles/collection.dir/src/ctrl/predeal.cpp.s
 
 CMakeFiles/collection.dir/src/ctrl/predeal.cpp.o.requires:
 
@@ -161,7 +161,7 @@ collection: /usr/local/lib/libopencv_photo.so.3.4.8
 collection: /usr/local/lib/libopencv_imgproc.so.3.4.8
 collection: /usr/local/lib/libopencv_core.so.3.4.8
 collection: CMakeFiles/collection.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable collection"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable collection"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/collection.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -179,6 +179,6 @@ CMakeFiles/collection.dir/clean:
 .PHONY : CMakeFiles/collection.dir/clean
 
 CMakeFiles/collection.dir/depend:
-	cd /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles/collection.dir/DependInfo.cmake --color=$(COLOR)
+	cd /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles/collection.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/collection.dir/depend
 

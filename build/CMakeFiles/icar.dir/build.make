@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th
+CMAKE_SOURCE_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build
+CMAKE_BINARY_DIR = /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/icar.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/icar.dir/flags.make
 
 CMakeFiles/icar.dir/src/icar.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/icar.cpp.o: ../src/icar.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/icar.dir/src/icar.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/icar.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/icar.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/icar.dir/src/icar.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/icar.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/icar.cpp
 
 CMakeFiles/icar.dir/src/icar.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/icar.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/icar.cpp > CMakeFiles/icar.dir/src/icar.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/icar.cpp > CMakeFiles/icar.dir/src/icar.cpp.i
 
 CMakeFiles/icar.dir/src/icar.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/icar.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/icar.cpp -o CMakeFiles/icar.dir/src/icar.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/icar.cpp -o CMakeFiles/icar.dir/src/icar.cpp.s
 
 CMakeFiles/icar.dir/src/icar.cpp.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/icar.dir/src/icar.cpp.o.provides.build: CMakeFiles/icar.dir/src/icar.
 
 CMakeFiles/icar.dir/src/ctrl/center.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/ctrl/center.cpp.o: ../src/ctrl/center.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/icar.dir/src/ctrl/center.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/ctrl/center.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/center.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/icar.dir/src/ctrl/center.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/ctrl/center.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/center.cpp
 
 CMakeFiles/icar.dir/src/ctrl/center.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/ctrl/center.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/center.cpp > CMakeFiles/icar.dir/src/ctrl/center.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/center.cpp > CMakeFiles/icar.dir/src/ctrl/center.cpp.i
 
 CMakeFiles/icar.dir/src/ctrl/center.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/ctrl/center.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/center.cpp -o CMakeFiles/icar.dir/src/ctrl/center.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/center.cpp -o CMakeFiles/icar.dir/src/ctrl/center.cpp.s
 
 CMakeFiles/icar.dir/src/ctrl/center.cpp.o.requires:
 
@@ -107,16 +107,16 @@ CMakeFiles/icar.dir/src/ctrl/center.cpp.o.provides.build: CMakeFiles/icar.dir/sr
 
 CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o: ../src/ctrl/predeal.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp
 
 CMakeFiles/icar.dir/src/ctrl/predeal.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/ctrl/predeal.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp > CMakeFiles/icar.dir/src/ctrl/predeal.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp > CMakeFiles/icar.dir/src/ctrl/predeal.cpp.i
 
 CMakeFiles/icar.dir/src/ctrl/predeal.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/ctrl/predeal.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp -o CMakeFiles/icar.dir/src/ctrl/predeal.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/predeal.cpp -o CMakeFiles/icar.dir/src/ctrl/predeal.cpp.s
 
 CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o.requires:
 
@@ -131,16 +131,16 @@ CMakeFiles/icar.dir/src/ctrl/predeal.cpp.o.provides.build: CMakeFiles/icar.dir/s
 
 CMakeFiles/icar.dir/src/ctrl/track.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/ctrl/track.cpp.o: ../src/ctrl/track.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/icar.dir/src/ctrl/track.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/ctrl/track.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/track.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/icar.dir/src/ctrl/track.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/ctrl/track.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/track.cpp
 
 CMakeFiles/icar.dir/src/ctrl/track.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/ctrl/track.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/track.cpp > CMakeFiles/icar.dir/src/ctrl/track.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/track.cpp > CMakeFiles/icar.dir/src/ctrl/track.cpp.i
 
 CMakeFiles/icar.dir/src/ctrl/track.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/ctrl/track.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/ctrl/track.cpp -o CMakeFiles/icar.dir/src/ctrl/track.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/ctrl/track.cpp -o CMakeFiles/icar.dir/src/ctrl/track.cpp.s
 
 CMakeFiles/icar.dir/src/ctrl/track.cpp.o.requires:
 
@@ -155,16 +155,16 @@ CMakeFiles/icar.dir/src/ctrl/track.cpp.o.provides.build: CMakeFiles/icar.dir/src
 
 CMakeFiles/icar.dir/src/fsm/busy.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/busy.cpp.o: ../src/fsm/busy.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/icar.dir/src/fsm/busy.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/busy.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/busy.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/icar.dir/src/fsm/busy.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/busy.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/busy.cpp
 
 CMakeFiles/icar.dir/src/fsm/busy.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/busy.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/busy.cpp > CMakeFiles/icar.dir/src/fsm/busy.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/busy.cpp > CMakeFiles/icar.dir/src/fsm/busy.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/busy.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/busy.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/busy.cpp -o CMakeFiles/icar.dir/src/fsm/busy.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/busy.cpp -o CMakeFiles/icar.dir/src/fsm/busy.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/busy.cpp.o.requires:
 
@@ -179,16 +179,16 @@ CMakeFiles/icar.dir/src/fsm/busy.cpp.o.provides.build: CMakeFiles/icar.dir/src/f
 
 CMakeFiles/icar.dir/src/fsm/cross.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/cross.cpp.o: ../src/fsm/cross.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/icar.dir/src/fsm/cross.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/cross.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/cross.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/icar.dir/src/fsm/cross.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/cross.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/cross.cpp
 
 CMakeFiles/icar.dir/src/fsm/cross.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/cross.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/cross.cpp > CMakeFiles/icar.dir/src/fsm/cross.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/cross.cpp > CMakeFiles/icar.dir/src/fsm/cross.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/cross.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/cross.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/cross.cpp -o CMakeFiles/icar.dir/src/fsm/cross.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/cross.cpp -o CMakeFiles/icar.dir/src/fsm/cross.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/cross.cpp.o.requires:
 
@@ -203,16 +203,16 @@ CMakeFiles/icar.dir/src/fsm/cross.cpp.o.provides.build: CMakeFiles/icar.dir/src/
 
 CMakeFiles/icar.dir/src/fsm/fork.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/fork.cpp.o: ../src/fsm/fork.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/icar.dir/src/fsm/fork.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/fork.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/fork.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/icar.dir/src/fsm/fork.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/fork.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/fork.cpp
 
 CMakeFiles/icar.dir/src/fsm/fork.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/fork.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/fork.cpp > CMakeFiles/icar.dir/src/fsm/fork.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/fork.cpp > CMakeFiles/icar.dir/src/fsm/fork.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/fork.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/fork.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/fork.cpp -o CMakeFiles/icar.dir/src/fsm/fork.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/fork.cpp -o CMakeFiles/icar.dir/src/fsm/fork.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/fork.cpp.o.requires:
 
@@ -227,16 +227,16 @@ CMakeFiles/icar.dir/src/fsm/fork.cpp.o.provides.build: CMakeFiles/icar.dir/src/f
 
 CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o: ../src/fsm/manualControl.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp
 
 CMakeFiles/icar.dir/src/fsm/manualControl.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/manualControl.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp > CMakeFiles/icar.dir/src/fsm/manualControl.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp > CMakeFiles/icar.dir/src/fsm/manualControl.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/manualControl.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/manualControl.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp -o CMakeFiles/icar.dir/src/fsm/manualControl.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/manualControl.cpp -o CMakeFiles/icar.dir/src/fsm/manualControl.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o.requires:
 
@@ -251,16 +251,16 @@ CMakeFiles/icar.dir/src/fsm/manualControl.cpp.o.provides.build: CMakeFiles/icar.
 
 CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o: ../src/fsm/obstacle.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp
 
 CMakeFiles/icar.dir/src/fsm/obstacle.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/obstacle.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp > CMakeFiles/icar.dir/src/fsm/obstacle.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp > CMakeFiles/icar.dir/src/fsm/obstacle.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/obstacle.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/obstacle.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp -o CMakeFiles/icar.dir/src/fsm/obstacle.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/obstacle.cpp -o CMakeFiles/icar.dir/src/fsm/obstacle.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o.requires:
 
@@ -275,16 +275,16 @@ CMakeFiles/icar.dir/src/fsm/obstacle.cpp.o.provides.build: CMakeFiles/icar.dir/s
 
 CMakeFiles/icar.dir/src/fsm/park.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/park.cpp.o: ../src/fsm/park.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/icar.dir/src/fsm/park.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/park.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/park.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/icar.dir/src/fsm/park.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/park.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/park.cpp
 
 CMakeFiles/icar.dir/src/fsm/park.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/park.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/park.cpp > CMakeFiles/icar.dir/src/fsm/park.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/park.cpp > CMakeFiles/icar.dir/src/fsm/park.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/park.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/park.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/park.cpp -o CMakeFiles/icar.dir/src/fsm/park.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/park.cpp -o CMakeFiles/icar.dir/src/fsm/park.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/park.cpp.o.requires:
 
@@ -299,16 +299,16 @@ CMakeFiles/icar.dir/src/fsm/park.cpp.o.provides.build: CMakeFiles/icar.dir/src/f
 
 CMakeFiles/icar.dir/src/fsm/slow.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/slow.cpp.o: ../src/fsm/slow.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/icar.dir/src/fsm/slow.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/slow.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/slow.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/icar.dir/src/fsm/slow.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/slow.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/slow.cpp
 
 CMakeFiles/icar.dir/src/fsm/slow.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/slow.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/slow.cpp > CMakeFiles/icar.dir/src/fsm/slow.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/slow.cpp > CMakeFiles/icar.dir/src/fsm/slow.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/slow.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/slow.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/slow.cpp -o CMakeFiles/icar.dir/src/fsm/slow.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/slow.cpp -o CMakeFiles/icar.dir/src/fsm/slow.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/slow.cpp.o.requires:
 
@@ -323,16 +323,16 @@ CMakeFiles/icar.dir/src/fsm/slow.cpp.o.provides.build: CMakeFiles/icar.dir/src/f
 
 CMakeFiles/icar.dir/src/fsm/station.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/station.cpp.o: ../src/fsm/station.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/icar.dir/src/fsm/station.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/station.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/station.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/icar.dir/src/fsm/station.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/station.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/station.cpp
 
 CMakeFiles/icar.dir/src/fsm/station.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/station.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/station.cpp > CMakeFiles/icar.dir/src/fsm/station.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/station.cpp > CMakeFiles/icar.dir/src/fsm/station.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/station.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/station.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/station.cpp -o CMakeFiles/icar.dir/src/fsm/station.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/station.cpp -o CMakeFiles/icar.dir/src/fsm/station.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/station.cpp.o.requires:
 
@@ -347,16 +347,16 @@ CMakeFiles/icar.dir/src/fsm/station.cpp.o.provides.build: CMakeFiles/icar.dir/sr
 
 CMakeFiles/icar.dir/src/fsm/stop.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/stop.cpp.o: ../src/fsm/stop.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/icar.dir/src/fsm/stop.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/stop.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/stop.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/icar.dir/src/fsm/stop.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/stop.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/stop.cpp
 
 CMakeFiles/icar.dir/src/fsm/stop.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/stop.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/stop.cpp > CMakeFiles/icar.dir/src/fsm/stop.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/stop.cpp > CMakeFiles/icar.dir/src/fsm/stop.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/stop.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/stop.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/stop.cpp -o CMakeFiles/icar.dir/src/fsm/stop.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/stop.cpp -o CMakeFiles/icar.dir/src/fsm/stop.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/stop.cpp.o.requires:
 
@@ -371,16 +371,16 @@ CMakeFiles/icar.dir/src/fsm/stop.cpp.o.provides.build: CMakeFiles/icar.dir/src/f
 
 CMakeFiles/icar.dir/src/fsm/yfork.cpp.o: CMakeFiles/icar.dir/flags.make
 CMakeFiles/icar.dir/src/fsm/yfork.cpp.o: ../src/fsm/yfork.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/icar.dir/src/fsm/yfork.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/yfork.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/icar.dir/src/fsm/yfork.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/icar.dir/src/fsm/yfork.cpp.o -c /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp
 
 CMakeFiles/icar.dir/src/fsm/yfork.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/icar.dir/src/fsm/yfork.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp > CMakeFiles/icar.dir/src/fsm/yfork.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp > CMakeFiles/icar.dir/src/fsm/yfork.cpp.i
 
 CMakeFiles/icar.dir/src/fsm/yfork.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/icar.dir/src/fsm/yfork.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp -o CMakeFiles/icar.dir/src/fsm/yfork.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/fsm/yfork.cpp -o CMakeFiles/icar.dir/src/fsm/yfork.cpp.s
 
 CMakeFiles/icar.dir/src/fsm/yfork.cpp.o.requires:
 
@@ -473,7 +473,7 @@ icar: /usr/local/lib/libopencv_photo.so.3.4.8
 icar: /usr/local/lib/libopencv_imgproc.so.3.4.8
 icar: /usr/local/lib/libopencv_core.so.3.4.8
 icar: CMakeFiles/icar.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable icar"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable icar"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/icar.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -503,6 +503,6 @@ CMakeFiles/icar.dir/clean:
 .PHONY : CMakeFiles/icar.dir/clean
 
 CMakeFiles/icar.dir/depend:
-	cd /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/build/CMakeFiles/icar.dir/DependInfo.cmake --color=$(COLOR)
+	cd /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build /media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/build/CMakeFiles/icar.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/icar.dir/depend
 

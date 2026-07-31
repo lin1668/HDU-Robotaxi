@@ -6,5 +6,5 @@ CXX_FLAGS = -O3 -Wall -mcpu=native -flto -pthread -Wno-sign-compare -Wno-unused-
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx 
+CXX_INCLUDES = -I/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/include -I/usr/include/glib-2.0 -I/usr/lib/aarch64-linux-gnu/glib-2.0/include -isystem /usr/local/include -isystem /usr/local/include/opencv -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx 
 

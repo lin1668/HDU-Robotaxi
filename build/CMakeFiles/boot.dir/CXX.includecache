@@ -34,7 +34,7 @@ string.h
 thread
 -
 
-/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/tool/boot.cpp
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/tool/boot.cpp
 iostream
 -
 stdlib.h
@@ -42,7 +42,7 @@ stdlib.h
 unistd.h
 -
 com/server.hpp
-/media/root/dcdecabc-f15f-479d-a387-4ef74888ea751/workspace/icar_autopilot_2026th/src/tool/com/server.hpp
+/media/root/dcdecabc-f15f-479d-a387-4ef74888ea752/workspace/icar_autopilot_2026th/src/tool/com/server.hpp
 string
 -
 fstream
