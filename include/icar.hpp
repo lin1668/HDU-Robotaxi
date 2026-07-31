@@ -38,6 +38,9 @@
 #include "ctrl/predeal.hpp"
 #include "ctrl/center.hpp"
 #include "ctrl/motion.hpp"
+#include <cstdio>
+#include <ctime>
+
 
 using namespace std;
 using namespace cv;
@@ -224,9 +227,31 @@ private:
         params->config.slow = params->config.currentLapConfig->slow;
         params->config.stop = params->config.currentLapConfig->stop;
         params->config.cross = params->config.currentLapConfig->cross;
-        params->config.yfork = params->config.currentLapConfig->yfork;
+        const bool yforkEnabled = params->config.currentLapConfig->yfork;
+        params->config.yfork = yforkEnabled;
         params->config.station = params->config.currentLapConfig->station;
         params->config.obstacle = params->config.currentLapConfig->obstacle;
+        static int yforkRouteLogCnt = 0;
+        if (yforkRouteLogCnt++ % 30 == 0)
+        {
+            FILE *fp = fopen("./yfork.log", yforkRouteLogCnt == 1 ? "w" : "a");
+
+            if (fp)
+            {
+                time_t now = time(nullptr);
+                struct tm *t = localtime(&now);
+                fprintf(fp, "[%02d:%02d:%02d] [YforkRoute] lap=%d mode=%d yforkEnabled=%d yforkLeft=%d fork=%d park=%d busy=%d station=%d results=%zu branch=%d guiding=%d\n",
+                        t->tm_hour, t->tm_min, t->tm_sec,
+                        params->currentLap, static_cast<int>(params->mode), yforkEnabled,
+                        params->config.currentLapConfig->yforkLeft, params->config.fork,
+                        params->config.park, params->config.busy, params->config.station,
+                        params->results.size(), params->yforkBranch, params->yforkGuiding);
+                fclose(fp);
+            }
+        }
+
+
+
 
         fsmFactory.stop->run(img); // 停车区识别与规划
         params->mode = fsmFactory.stop->getMode();
@@ -252,7 +277,7 @@ private:
                 params->mode = fsmFactory.fork->getMode();
             }
         }
-        if (params->config.yfork)
+        if (yforkEnabled)
         {
             if (params->mode == FsmMode::NORMAL)
             {
@@ -260,6 +285,28 @@ private:
                 params->mode = fsmFactory.yfork->getMode();
             }
         }
+        else
+        {
+            static int yforkDisabledLogCnt = 0;
+            if (yforkDisabledLogCnt++ % 30 == 0)
+            {
+                FILE *fp = fopen("./yfork.log", "a");
+                if (fp)
+                {
+                    time_t now = time(nullptr);
+                    struct tm *t = localtime(&now);
+                    fprintf(fp, "[%02d:%02d:%02d] [YforkRoute] skip yfork: lap=%d yforkEnabled=0 mode=%d results=%zu branch=%d guiding=%d\n",
+                            t->tm_hour, t->tm_min, t->tm_sec,
+                            params->currentLap, static_cast<int>(params->mode),
+                            params->results.size(), params->yforkBranch, params->yforkGuiding);
+                    fclose(fp);
+                }
+            }
+
+            // 即使上一圈曾经进入YFORK，本圈也绝不保留其引导、分支和检测状态。
+            fsmFactory.yfork->deactivate();
+        }
+
         if (params->config.slow)
         {
             fsmFactory.slow->run(img);

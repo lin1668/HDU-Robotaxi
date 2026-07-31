@@ -162,10 +162,15 @@ void Center::fitting(shared_ptr<Params> &params)
     // 中心外偏，让车靠外道跑，避免压内线（像素偏移量，越大越靠外）
     params->ctrl.center += 16;
 
-    // yfork 期间用负偏移把车往左压（正偏移会把车推回右边）
-    if (params->mode == FsmMode::FORK || params->mode == FsmMode::YFORK)
+    // YFork 左右分支分别调节向左压的偏移量
+    static constexpr int YFORK_LEFT_CENTER_OFFSET = 18;
+    static constexpr int YFORK_RIGHT_CENTER_OFFSET = 0;
+    if (params->mode == FsmMode::YFORK)
     {
-        params->ctrl.center -= 20;
+        if (params->yforkBranch == 1)
+            params->ctrl.center -= YFORK_LEFT_CENTER_OFFSET;
+        else if (params->yforkBranch == 2)
+            params->ctrl.center -= YFORK_RIGHT_CENTER_OFFSET;
     }
 
     if (params->ctrl.center > COLSIMAGE)

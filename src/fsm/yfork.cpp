@@ -29,7 +29,7 @@
 static void ylog(const char *fmt, ...)
 {
     static FILE *fp = nullptr;
-    if (!fp) fp = fopen("./yfork.log", "w");
+    if (!fp) fp = fopen("./yfork.log", "a");
     if (!fp) return;
     time_t now = time(nullptr);
     struct tm *t = localtime(&now);
@@ -67,10 +67,24 @@ FsmYfork::~FsmYfork()
  */
 FsmMode FsmYfork::getMode()
 {
-    if (!params->config.yfork || !params->config.currentLapConfig ||
-        !params->config.currentLapConfig->yfork || !enable)
+    const bool hasLapConfig = params->config.currentLapConfig != nullptr;
+    const bool lapYfork = hasLapConfig && params->config.currentLapConfig->yfork;
+    if (!params->config.yfork || !hasLapConfig || !lapYfork || !enable)
+    {
+        static int blockLogCnt = 0;
+        if ((enable || params->mode == FsmMode::YFORK || params->yforkBranch != 0) && blockLogCnt++ % 10 == 0)
+        {
+            ylog("[Yfork] getMode -> NORMAL: globalYfork=%d hasLapConfig=%d lapYfork=%d enable=%d mode=%d branch=%d guiding=%d",
+                 params->config.yfork, hasLapConfig, lapYfork, enable,
+                 static_cast<int>(params->mode), params->yforkBranch, params->yforkGuiding);
+        }
         return FsmMode::NORMAL;
+    }
 
+    ylog("[Yfork] getMode -> YFORK: lap=%d globalYfork=%d lapYfork=%d yforkLeft=%d enable=%d step=%d branch=%d forkSeen=%d completed=%d results=%d",
+         params->currentLap, params->config.yfork, lapYfork,
+         params->config.currentLapConfig->yforkLeft, enable, static_cast<int>(step),
+         params->yforkBranch, forkSeen, completed, (int)params->results.size());
     return FsmMode::YFORK;
 }
 
@@ -85,6 +99,15 @@ void FsmYfork::run(Mat &img)
     if (!params->config.yfork || !params->config.currentLapConfig ||
         !params->config.currentLapConfig->yfork)
     {
+        static int noTaskLogCnt = 0;
+        if ((enable || forkSeen || step != Step::NONE || params->yforkBranch != 0 || params->yforkGuiding) && noTaskLogCnt++ % 10 == 0)
+        {
+            ylog("[Yfork] run blocked: no task, reset residual state. lap=%d globalYfork=%d hasLapConfig=%d lapYfork=%d enable=%d step=%d forkSeen=%d branch=%d guiding=%d completed=%d results=%d",
+                 params->currentLap, params->config.yfork, params->config.currentLapConfig != nullptr,
+                 params->config.currentLapConfig ? params->config.currentLapConfig->yfork : 0,
+                 enable, static_cast<int>(step), forkSeen, params->yforkBranch,
+                 params->yforkGuiding, completed, (int)params->results.size());
+        }
         reset();
         completed = false;
         return;
@@ -102,23 +125,41 @@ void FsmYfork::run(Mat &img)
     if (params->mode != FsmMode::NORMAL && params->mode != FsmMode::YFORK)
         return;
 
-    // ===== 左分支停车兜底：FORK达标后同步计时自动停车 =====
-    if (forkForceLeftTimer > 0 && params->yforkBranch == 1 && !params->stationStopCompleted)
+    // ===== 左分支停车兜底：仅由 FORK 触发的左转启动 =====
+    // 不提前 return，确保自动停车倒计时期间仍持续执行岔路引导和退出检测。
+    if (forkAutoStopTimer > 0 && params->yforkBranch == 1 && !params->stationStopCompleted)
     {
-        if (forceLeftDone && forkForceLeftTimer >= FORK_AUTO_STOP_DELAY)
+        // 岔路引导未结束时不计兜底时间，避免车辆仍在强制左转阶段就提前停车。
+        if (params->yforkGuiding)
         {
-            params->ctrl.stop = true;
-            yforkParkStopCount++;
-            ylog("[Yfork] run: AUTO STOP forkTimer=%d >= %d, stopTimer=%d/30",
-                 forkForceLeftTimer, FORK_AUTO_STOP_DELAY, yforkParkStopCount);
-            if (yforkParkStopCount > 30)
+            // 等待引导结束后再由 Station 或自动停车兜底接管。
+        }
+        // Station 已经识别到目标停车框时，交由 Station 完成停车；尚未停车时才取消兜底。
+        else if (params->stationStarted && yforkParkStopCount == 0)
+        {
+            ylog("[Yfork] STOP PATH=STATION_LEFT_BRANCH: station started, cancel FORK auto-stop fallback");
+            forkAutoStopTimer = 0;
+        }
+        else
+        {
+            forkAutoStopTimer++;
+            if (forkAutoStopTimer >= FORK_AUTO_STOP_DELAY)
             {
-                params->ctrl.stop = false;
-                params->stationStopCompleted = true;
-                ylog("[Yfork] run: AUTO STOP END, resume");
+                params->ctrl.stop = true;
+                yforkParkStopCount++;
+                 if (yforkParkStopCount == 1)
+                    ylog("[Yfork] STOP PATH=FORK_AUTO_FALLBACK: timer=%d >= %d, begin stop",
+                        forkAutoStopTimer, FORK_AUTO_STOP_DELAY);
+                if (yforkParkStopCount > 30)
+                {
+                    params->ctrl.stop = false;
+                    params->stationStopCompleted = true;
+                    forkAutoStopTimer = 0;
+                    yforkParkStopCount = 0;
+                    ylog("[Yfork] STOP PATH=FORK_AUTO_FALLBACK: stop complete, resume");
+                }
             }
         }
-        return;
     }
 
     enable = handle(img); // 处理Y型岔路口
@@ -191,11 +232,24 @@ void FsmYfork::reset(void)
     holdCol = 0;
     forceLeftTimer = 0;
     forkForceLeftTimer = 0;
+    forkAutoStopTimer = 0;
+    yforkParkStopCount = 0;
     // forceLeftDone 不在这里清零，只在 resetLap() 清零，防止同圈重复触发
     params->stationStopCompleted = false;
     params->stationStarted = false;
     params->yforkGuiding = false;
-    // yforkBranch 不清零，留给 station 自动停车用，只在新一圈清零
+    // 当前 Yfork 任务尚未完成时保留分支，供 station 使用；finish() 与 resetLap() 清零。
+}
+
+void FsmYfork::finish()
+{
+    // 正常完成后不能让 reset() 清掉 station 的已停靠结果；同时结束左分支
+    // 标记，避免后续普通 Station 框再次按左分支规则触发停车。
+    bool stationStopCompleted = params->stationStopCompleted;
+    reset();
+    completed = true;
+    params->stationStopCompleted = stationStopCompleted;
+    params->yforkBranch = 0;
 }
 
 void FsmYfork::resetLap()
@@ -204,6 +258,34 @@ void FsmYfork::resetLap()
     completed = false; // 新圈重新检测
     forceLeftDone = false; // 新一圈重新允许强制左转
     params->yforkBranch = 0; // 新一圈清零
+}
+
+/**
+ * @brief 当前圈没有Y型岔路任务时，清除Y岔路本身的残留状态
+ *
+ * 不复位station状态，避免施工区/停车场圈的停靠流程被误清除。
+ */
+void FsmYfork::deactivate()
+{
+    bool stationStopCompleted = params->stationStopCompleted;
+    bool stationStarted = params->stationStarted;
+
+    if (enable || forkSeen || step != Step::NONE || params->yforkBranch != 0 || params->yforkGuiding || completed || forceLeftDone)
+    {
+        ylog("[Yfork] deactivate: lap=%d no yfork task, clearing residual state. globalYfork=%d lapYfork=%d enable=%d step=%d forkSeen=%d branch=%d guiding=%d completed=%d forceLeftDone=%d results=%d",
+             params->currentLap, params->config.yfork,
+             params->config.currentLapConfig ? params->config.currentLapConfig->yfork : 0,
+             enable, static_cast<int>(step), forkSeen, params->yforkBranch,
+             params->yforkGuiding, completed, forceLeftDone, (int)params->results.size());
+    }
+
+    reset();
+    completed = false;
+    forceLeftDone = false;
+    params->yforkBranch = 0;
+
+    params->stationStopCompleted = stationStopCompleted;
+    params->stationStarted = stationStarted;
 }
 
 /**
@@ -264,7 +346,7 @@ bool FsmYfork::handle(Mat &img)
                         step = Step::ENTER;
                         counterYfork = 0;
                         timeout = 0;
-                        ylog("[Yfork] NONE: FORCE LEFT TRIGGER station box #%d cx=%d y=%d h=%d w=%d bottom=%d, forceFrames=%d -> ENTER (one-shot)",
+                            ylog("[Yfork] FORCE LEFT PATH=STATION_BOX: box #%d cx=%d y=%d h=%d w=%d bottom=%d, forceFrames=%d -> ENTER",
                              stationCount, boxCx, params->results[i].y,
                              params->results[i].height, params->results[i].width, boxBottom, FORCE_LEFT_FRAMES);
                         return true;
@@ -325,40 +407,41 @@ bool FsmYfork::handle(Mat &img)
                         }
                     }
                 }
+
+                // FORK 达到阈值后在当前帧开始左转；当延迟设为 0 时不等待
+                // FORK 离开画面，延迟大于 0 时则要求持续满足阈值 N 帧后触发。
+                if (passed && forkForceLeftTimer > FORK_FORCE_LEFT_DELAY)
+                {
+                    int triggerTimer = forkForceLeftTimer;
+                    selectLeft = true;
+                    params->yforkBranch = 1;
+                    forceLeftTimer = FORCE_LEFT_FRAMES;
+                    forceLeftDone = true;
+                    forkForceLeftTimer = 0;
+                    forkAutoStopTimer = 1;
+                    step = Step::ENTER;
+                    counterYfork = 0;
+                    timeout = 0;
+                    ylog("[Yfork] FORCE LEFT PATH=FORK_THRESHOLD: timer=%d > delay=%d, forceFrames=%d -> ENTER",
+                         triggerTimer, FORK_FORCE_LEFT_DELAY, FORCE_LEFT_FRAMES);
+                    ylog("[Yfork] STOP FALLBACK=FORK_AUTO: armed, starts after guidance release, delay=%d frames",
+                        FORK_AUTO_STOP_DELAY);
+                    return true;
+                }
                 if (!passed && forkForceLeftTimer == 0)
                 {
                     static int notYetLog = 0;
                     if (notYetLog++ % 30 == 1)
                         ylog("[Yfork] NONE: FORK seen but not yet %.0f%%, waiting...", FORK_FORCE_LEFT_RATIO * 100);
                 }
+                else if (!passed)
+                {
+                    forkForceLeftTimer = 0;
+                }
             }
         }
         else if (forkSeen)
         {
-            // FORK离开画面，继续计时
-            if (canForkForce && forkForceLeftTimer > 0)
-            {
-                forkForceLeftTimer++;
-                if (forkForceLeftTimer % 15 == 1 || forkForceLeftTimer == 1)
-                    ylog("[Yfork] NONE: FORK vanished, timer=%d/%d (continuing)", forkForceLeftTimer, FORK_FORCE_LEFT_DELAY);
-            }
-
-            // FORK强制左转延时到 → 触发
-            if (canForkForce && forkForceLeftTimer >= FORK_FORCE_LEFT_DELAY)
-            {
-                selectLeft = true;
-                params->yforkBranch = 1;
-                forceLeftTimer = FORCE_LEFT_FRAMES;
-                forceLeftDone = true;
-                forkForceLeftTimer = 0;
-                step = Step::ENTER;
-                counterYfork = 0;
-                timeout = 0;
-                ylog("[Yfork] NONE: FORCE LEFT TRIGGER by FORK (timer=%d >= %d), forceFrames=%d -> ENTER",
-                     forkForceLeftTimer, FORK_FORCE_LEFT_DELAY, FORCE_LEFT_FRAMES);
-                return true;
-            }
-
             // fork已离开画面，开始找V尖
             if (findVTip(img))
             {
@@ -375,6 +458,7 @@ bool FsmYfork::handle(Mat &img)
                     ylog("[Yfork] NONE: forkSeen but no V-tip yet (cnt=%d)", noVtipCount);
             }
         }
+
         return forkSeen; // 检测到fork进入YFORK模式减速，引导在V尖找到后才开始
     }
 
@@ -417,8 +501,9 @@ bool FsmYfork::handle(Mat &img)
                 ylog("[Yfork] ENTER: FORCE LEFT FINISHED, normal guidance resumes");
         }
 
-        // 引导期间屏蔽station检测，但V尖消失后放开让station能检测停车框
-        params->yforkGuiding = (holdRow > 0) && (!vloss || vlossTimer < 5);
+        // 引导期间屏蔽station检测；右分支更早放开，尽快恢复巡线并寻找停车框
+        const int stationBlockFrames = selectLeft ? 5 : 2;
+        params->yforkGuiding = (holdRow > 0) && (!vloss || vlossTimer < stationBlockFrames);
 
         // 左岔路：V尖消失后左边线突变 → 已右拐驶出岔路
         //   - 当前圈启用了station时：阻止突变退出，等先停好车
@@ -432,8 +517,7 @@ bool FsmYfork::handle(Mat &img)
             {
                 ylog("[Yfork] ENTER: LEFT edge MUTATION cur=%d prev=%d diff=%d -> EXIT",
                      cur, countRes, abs(cur - countRes));
-                reset();
-                completed = true;
+                finish();
                 return true;
             }
             countRes = cur;
@@ -447,8 +531,7 @@ bool FsmYfork::handle(Mat &img)
             {
                 ylog("[Yfork] ENTER: RIGHT edge MUTATION cur=%d prev=%d diff=%d -> EXIT",
                      cur, countRes, abs(cur - countRes));
-                reset();
-                completed = true;
+                finish();
                 return true;
             }
             countRes = cur;
@@ -477,8 +560,7 @@ bool FsmYfork::handle(Mat &img)
     case Step::END:
     {
         ylog("[Yfork] END (completed)");
-        reset();
-        completed = true; // 完成一轮Y型岔路，防止停车区误触发
+        finish(); // 完成一轮Y型岔路，防止停车区fork箭头误触发
         return true;
     }
     }
@@ -617,10 +699,11 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
         vlossTimer = 0;
     }
 
-    // V尖消失后保持引导0.6秒（18帧）
+    // V尖消失后保留引导；右分支缩短保持时间，尽早恢复自然巡线
+    const int guideHoldFrames = left ? 18 : 0;
     if (vRow == 0 || vCol == 0)
     {
-        if (holdRow > 0 && vlossTimer < 18)
+        if (holdRow > 0 && vlossTimer < guideHoldFrames)
         {
             vlossTimer++;
             vRow = holdRow;
@@ -629,7 +712,8 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
         else
         {
             if (holdRow > 0)
-                ylog("[Yfork] replan: hold expired (vlossTimer=%d >= 18), releasing guidance", vlossTimer);
+                ylog("[Yfork] replan: hold expired (vlossTimer=%d >= %d, left=%d), releasing guidance",
+                     vlossTimer, guideHoldFrames, left);
             holdRow = 0;
             holdCol = 0;
             return;
@@ -719,7 +803,7 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
 
         // 直线屏障：从V尖到底部左侧（镜像左分支）
         vector<PointX> barrier;
-        int endCol = (int)(COLSIMAGE * 0.3f);
+        int endCol = (int)(COLSIMAGE * 0.4f);
         int steps = 15;
         for (int i = 1; i <= steps; i++)
         {

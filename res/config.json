@@ -5,12 +5,12 @@
     "velSlow": 0.3,
     "velPark": 0.35,
     "velCurve": 0.25,
-    "velBusy": 0.4,
+    "velBusy": 0.35,
     "velStop": 0.4,
     "velCross": 0.4,
-    "velYfork": 0.2,
+    "velYfork": 0.3,
     "runP1": 2.2,
-    "runP2": 0.008,
+    "runP2": 0.006,
     "turnP": 3,
     "turnD": 2.7,
     "debug": false,
@@ -19,11 +19,11 @@
     "rowCutUp": 10,
     "rowCutBottom": 15,
     "overlap": 0.3,
-    "score": 0.15,
+    "score": 0.2,
     "binary": -1,
     "model": "../res/models/yolov3_mobilenet_v1",
     "video": "../res/samples/sample.mp4",
-    "alertTarget": "busy"
+    "alertTarget": "cone"
   },
   "圈数配置": {
     "totalLaps": 3,
@@ -42,7 +42,7 @@
       "curve": false,
       "fine": false,
       "yfork": true,
-      "yforkLeft": true,
+      "yforkLeft": false,
       "manualTakeover": false,
       "busyStopEnable": false,
       "busyStopPoint": 0

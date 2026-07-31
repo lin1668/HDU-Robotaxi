@@ -100,9 +100,9 @@ void FsmBusy::run(Mat &img)
                     waitStationStop = true; // 正在停车，等待
                 }
                 else if (params->config.currentLapConfig->busyStopPoint == 1 &&
-                         stationExitCooldown < 30)
+                         stationExitCooldown < FIRST_STOP_EXIT_COOLDOWN_FRAMES)
                 {
-                    // 第一个框：停车后等1秒再检测左转
+                    // 第一个框：停车后等待一段时间再检测左转
                     stationExitCooldown++;
                     waitStationStop = true;
                 }
@@ -116,7 +116,7 @@ void FsmBusy::run(Mat &img)
                     if (params->results[i].type == LABEL_LEFT &&
                         params->results[i].width < 100 &&
                         params->results[i].height < 120 &&
-                        (params->results[i].y + params->results[i].height / 2) > ROWSIMAGE * 0.27)
+                        (params->results[i].y + params->results[i].height / 2) > ROWSIMAGE * 0.40)
                     {
                         exiting = true;
                         exitTimeout = 0;

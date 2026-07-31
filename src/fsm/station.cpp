@@ -21,10 +21,34 @@
  */
 
 #include "fsm/station.hpp"
+#include <cstdarg>
+#include <cstdio>
+#include <ctime>
+
+static void busylog(const char *fmt, ...)
+{
+    static FILE *fp = nullptr;
+    if (!fp)
+        fp = fopen("./busy.log", "w");
+    if (!fp)
+        return;
+
+    time_t now = time(nullptr);
+    struct tm *t = localtime(&now);
+    fprintf(fp, "[%02d:%02d:%02d] ", t->tm_hour, t->tm_min, t->tm_sec);
+
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(fp, fmt, args);
+    va_end(args);
+    fprintf(fp, "\n");
+    fflush(fp);
+}
 
 FsmStation::FsmStation(std::shared_ptr<Params> par)
     : FSMState(FsmMode::STATION, par)
 {
+    busylog("BUSY LOG START");
 }
 
 FsmStation::~FsmStation()
@@ -47,39 +71,103 @@ void FsmStation::run(Mat &img)
         params->takeoverJustEnded = false;
         stationBoxCounter = 0;
         stationBoxCounted = false;
-        if (params->busyZone)
+        if (params->busyZone && params->config.currentLapConfig)
         {
             int target = params->config.currentLapConfig->busyStopPoint;
             if (target > 1)
             {
-                busyEntryDelay = 60; // 跳过第一个框：等2秒再开始检测
-                stationBoxCounter = target - 1;
+                busyEntryDelay = Tune::BUSY_ENTRY_DELAY_FRAMES; // 跳过第一个框：延迟一段时间再开始检测
+                //stationBoxCounter = target - 1;（此段注释掉，避免无法在第二个框停车）
             }
         }
         printf("[Station] Manual takeover ended, reset counters\n");
+        busylog("TAKEOVER_END busy=%d target=%d entryDelay=%d boxCounter=%d counted=%d branch=%d guiding=%d",
+                params->busyZone,
+                params->config.currentLapConfig ? params->config.currentLapConfig->busyStopPoint : -1,
+                busyEntryDelay, stationBoxCounter, stationBoxCounted,
+                params->yforkBranch, params->yforkGuiding);
     }
 
     // 手动接管期间不做任何识别
     if (params->manualTakeover)
+    {
+        static int manualLogCounter = 0;
+        if (params->busyZone && manualLogCounter++ % 30 == 0)
+            busylog("BLOCKED manualTakeover=1 branch=%d guiding=%d results=%d",
+                    params->yforkBranch, params->yforkGuiding, (int)params->results.size());
         return;
+    }
 
     // 当前圈未启用station
-    if (!params->config.station || !params->config.currentLapConfig->station)
+    if (!params->config.station || !params->config.currentLapConfig || !params->config.currentLapConfig->station)
+    {
+        static int stationDisabledLogCounter = 0;
+        if (params->busyZone && stationDisabledLogCounter++ % 30 == 0)
+            busylog("BLOCK stationDisabled global=%d lapConfig=%d lap=%d boxes=%d",
+                    params->config.station, params->config.currentLapConfig != nullptr,
+                    params->config.currentLapConfig ? params->config.currentLapConfig->station : 0,
+                    (int)params->results.size());
         return;
+    }
+
 
     countInit++;
     if (countInit > 999)
         countInit = 999;
-    else if (countInit < 60) // 发车屏蔽
+    else if (countInit < Tune::STARTUP_IGNORE_FRAMES) // 发车屏蔽
         return;
 
     switch (step)
     {
     case Step::NONE:
     {
-        // 施工区进入后等4秒再开始检测（让车走过前面N个框）
+        static int busyFrameLogCounter = 0;
+        int busyTarget = params->config.currentLapConfig->busyStopPoint;
+        int stationCount = 0;
+        int maxBottom = -1;
+        for (const auto &result : params->results)
+        {
+            if (result.type == LABEL_STATION)
+            {
+                stationCount++;
+                int bottom = result.y + result.height;
+                if (bottom > maxBottom)
+                    maxBottom = bottom;
+            }
+        }
+        int diagThreshold = -1;
+        if (params->busyZone)
+        {
+            if (params->yforkBranch == 1)
+                diagThreshold = static_cast<int>(ROWSIMAGE * Tune::LEFT_BRANCH_TRIGGER_RATIO);
+            else if (params->yforkBranch == 2)
+                diagThreshold = static_cast<int>(ROWSIMAGE * Tune::RIGHT_BRANCH_TRIGGER_RATIO);
+            else
+            {
+                bool isFirstBox = !params->stationStopCompleted &&
+                                  (busyTarget == 1 || (busyTarget > 1 && stationBoxCounter < busyTarget - 1));
+                diagThreshold = isFirstBox
+                                    ? static_cast<int>(ROWSIMAGE * Tune::BUSY_FIRST_BOX_RATIO)
+                                    : ROWSIMAGE - Tune::BUSY_TARGET_BOTTOM_MARGIN;
+            }
+        }
+        if (params->busyZone && (stationCount > 0 || pressTimer > 0 || busyEntryDelay > 0 || cooldown > 0) &&
+            busyFrameLogCounter++ % 15 == 0)
+        {
+            busylog("FRAME target=%d boxes=%d maxBottom=%d threshold=%d pass=%d counter=%d counted=%d entryDelay=%d cooldown=%d press=%d completed=%d branch=%d guiding=%d ctrlStop=%d speed=%.2f",
+                    busyTarget, stationCount, maxBottom, diagThreshold,
+                    diagThreshold >= 0 && maxBottom > diagThreshold,
+                    stationBoxCounter, stationBoxCounted, busyEntryDelay, cooldown, pressTimer,
+                    params->stationStopCompleted, params->yforkBranch, params->yforkGuiding,
+                    params->ctrl.stop, params->ctrl.speed);
+        }
+
+        // 施工区进入后延迟检测（让车走过前面的框）
         if (params->busyZone && busyEntryDelay > 0)
         {
+            if (busyEntryDelay == Tune::BUSY_ENTRY_DELAY_FRAMES || busyEntryDelay == 1)
+                busylog("BLOCKED entryDelay=%d target=%d boxCounter=%d",
+                        busyEntryDelay, params->config.currentLapConfig->busyStopPoint, stationBoxCounter);
             busyEntryDelay--;
             break;
         }
@@ -87,7 +175,14 @@ void FsmStation::run(Mat &img)
         // 施工区未启用停车或busyStopPoint为0时跳过检测
         if (params->busyZone && (!params->config.currentLapConfig->busyStopEnable ||
                                  params->config.currentLapConfig->busyStopPoint == 0))
+        {
+            static int disabledLogCounter = 0;
+            if (disabledLogCounter++ % 30 == 0)
+                busylog("BLOCKED busyStopEnable=%d target=%d",
+                        params->config.currentLapConfig->busyStopEnable,
+                        params->config.currentLapConfig->busyStopPoint);
             break;
+        }
 
         // 非施工区复位跳过计数
         if (!params->busyZone)
@@ -99,6 +194,10 @@ void FsmStation::run(Mat &img)
         // 停车后冷却期内不检测
         if (cooldown > 0)
         {
+            if (params->busyZone && (cooldown == Tune::BUSY_COOLDOWN_FRAMES || cooldown == 1))
+                busylog("BLOCK cooldown=%d target=%d counter=%d boxes=%d ctrlStop=%d speed=%.2f",
+                        cooldown, busyTarget, stationBoxCounter, stationCount,
+                        params->ctrl.stop, params->ctrl.speed);
             cooldown--;
             break;
         }
@@ -106,38 +205,60 @@ void FsmStation::run(Mat &img)
         if (pressTimer > 0)
         {
             pressTimer++;
-            // 施工区第一个框1.3s(40帧)，第二个目标框0.6s(20帧)，左岔路1.1s(33帧)，其他0.6s(19帧)
-            int pressThreshold = 19;
+            // 各停车场景压框等待帧数集中在 Tune 中调参
+            int pressThreshold = Tune::NORMAL_PRESS_FRAMES;
             if (params->busyZone && stationBoxCounter == 0)
-                pressThreshold = 40;
+                pressThreshold = Tune::BUSY_FIRST_PRESS_FRAMES;
             if (params->busyZone && params->config.currentLapConfig->busyStopPoint > 1 &&
                 stationBoxCounter >= params->config.currentLapConfig->busyStopPoint - 1)
-                pressThreshold = 20;
+                pressThreshold = Tune::BUSY_TARGET_PRESS_FRAMES;
             if (params->yforkBranch == 1)
-                pressThreshold = 33;
+                pressThreshold = Tune::LEFT_BRANCH_PRESS_FRAMES;
+            else if (params->yforkBranch == 2)
+                pressThreshold = Tune::RIGHT_BRANCH_PRESS_FRAMES;
+            if (params->busyZone && (pressTimer == 2 || pressTimer == pressThreshold || pressTimer == pressThreshold + 1))
+                busylog("PRESS timer=%d threshold=%d target=%d counter=%d branch=%d ctrlStop=%d speed=%.2f",
+                        pressTimer, pressThreshold, params->config.currentLapConfig->busyStopPoint,
+                        stationBoxCounter, params->yforkBranch, params->ctrl.stop, params->ctrl.speed);
             if (pressTimer > pressThreshold)
             {
-                printf("[Station] Pressed +%.1fs, stopping...\n", pressThreshold / 30.0f);
+                if (params->busyZone)
+                    busylog("STOP_TRIGGER timer=%d threshold=%d target=%d counter=%d branch=%d beforeStop=%d beforeSpeed=%.2f",
+                            pressTimer, pressThreshold, params->config.currentLapConfig->busyStopPoint,
+                            stationBoxCounter, params->yforkBranch, params->ctrl.stop, params->ctrl.speed);
+                const char *stopPath = params->yforkBranch == 1
+                                           ? "YFORK_LEFT_STATION"
+                                           : (params->yforkBranch == 2 ? "YFORK_RIGHT_STATION" : "NORMAL_STATION");
+                printf("[Station] STOP PATH=%s, pressed +%.1fs, stopping...\n",
+                       stopPath, pressThreshold / 30.0f);
                 setStep(Step::STOP);
+                params->ctrl.stop = true;
+                params->ctrl.speed = 0.0f;
+                if (params->busyZone)
+                    busylog("STOP_SET ctrlStop=%d speed=%.2f step=STOP", params->ctrl.stop, params->ctrl.speed);
             }
             break;
         }
 
-        // 左岔路：引导结束见框开始计时（框过0.5后延迟N帧再停）
+        // 左岔路：引导结束后，框底边超过画面 50% 即累计停车计时。
         if (params->yforkBranch == 1)
         {
             // 引导期间不检测
             if (params->yforkGuiding)
+            {
+                if (params->busyZone)
+                    busylog("BLOCK yforkGuiding branch=1 target=%d counter=%d boxes=%d",
+                            params->config.currentLapConfig->busyStopPoint, stationBoxCounter, stationCount);
                 break;
+            }
 
             bool boxSeen = false;
             for (int i = 0; i < params->results.size(); i++)
             {
                 if (params->results[i].type == LABEL_STATION)
                 {
-                    int boxCx = params->results[i].x + params->results[i].width / 2;
                     int boxBottom = params->results[i].y + params->results[i].height;
-                    if (boxCx < COLSIMAGE / 2 && boxBottom > ROWSIMAGE * 0.3)
+                    if (boxBottom > ROWSIMAGE * Tune::LEFT_BRANCH_TRIGGER_RATIO)
                     {
                         boxSeen = true;
                         break;
@@ -148,26 +269,77 @@ void FsmStation::run(Mat &img)
             if (boxSeen)
             {
                 leftBranchDelay++;
-                if (leftBranchDelay >= LEFT_BRANCH_DELAY_FRAMES)
+                if (leftBranchDelay >= Tune::LEFT_BRANCH_DELAY_FRAMES)
                 {
                     params->stationStarted = true;
                     pressTimer = 1;
                     leftBranchDelay = 0;
-                    printf("[Station] Left branch, delay=%d done, 0.3s stop\n", LEFT_BRANCH_DELAY_FRAMES);
+                    printf("[Station] STOP PATH=YFORK_LEFT_STATION, target box confirmed, delay=%d done\n",
+                           Tune::LEFT_BRANCH_DELAY_FRAMES);
                 }
+            }
+        }
+        else if (params->yforkBranch == 2)
+        {
+            // 右岔路：使用独立中段阈值，避免通用station到底部才停。
+            if (params->yforkGuiding)
+            {
+                if (params->busyZone)
+                    busylog("BLOCK yforkGuiding branch=2 target=%d counter=%d boxes=%d",
+                            params->config.currentLapConfig->busyStopPoint, stationBoxCounter, stationCount);
+                break;
+            }
+
+            bool boxSeen = false;
+            for (int i = 0; i < params->results.size(); i++)
+            {
+                if (params->results[i].type == LABEL_STATION)
+                {
+                    int boxBottom = params->results[i].y + params->results[i].height;
+                    int threshold = static_cast<int>(ROWSIMAGE * Tune::RIGHT_BRANCH_TRIGGER_RATIO);
+                    if (boxBottom > threshold)
+                    {
+                        boxSeen = true;
+                        break;
+                    }
+                }
+            }
+
+            if (boxSeen)
+            {
+                rightBranchDelay++;
+                if (rightBranchDelay >= Tune::RIGHT_BRANCH_DELAY_FRAMES)
+                {
+                    params->stationStarted = true;
+                    pressTimer = 1;
+                    rightBranchDelay = 0;
+                    printf("[Station] STOP PATH=YFORK_RIGHT_STATION, target box confirmed, ratio=%.2f delay=%d done\n",
+                           Tune::RIGHT_BRANCH_TRIGGER_RATIO, Tune::RIGHT_BRANCH_DELAY_FRAMES);
+                }
+            }
+            else
+            {
+                rightBranchDelay = 0;
             }
         }
         else
         {
             // yfork引导期间不检测station框，避免干扰岔路导航
             if (params->yforkGuiding)
+            {
+                if (params->busyZone)
+                    busylog("BLOCK yforkGuiding branch=0 target=%d counter=%d boxes=%d",
+                            params->config.currentLapConfig->busyStopPoint, stationBoxCounter, stationCount);
                 break;
+            }
 
-            // 非左岔路：框到底部才检测
+            // 普通station：框到底部才检测
+            bool stationVisible = false;
             for (int i = 0; i < params->results.size(); i++)
             {
                 if (params->results[i].type == LABEL_STATION)
                 {
+                    stationVisible = true;
                     // 第一个框在中部检测，第二个框到底部才触发
                     int boxBottom = params->results[i].y + params->results[i].height;
                     bool isFirstBox = params->busyZone && !params->stationStopCompleted &&
@@ -175,39 +347,73 @@ void FsmStation::run(Mat &img)
                                        (params->config.currentLapConfig->busyStopPoint > 1 &&
                                         stationBoxCounter < params->config.currentLapConfig->busyStopPoint - 1));
                     int threshold = isFirstBox
-                                        ? static_cast<int>(ROWSIMAGE * 0.5)
-                                        : ROWSIMAGE - 10;
+                                        ? static_cast<int>(ROWSIMAGE * Tune::BUSY_FIRST_BOX_RATIO)
+                                        : ROWSIMAGE - (params->busyZone ? Tune::BUSY_TARGET_BOTTOM_MARGIN : Tune::NORMAL_TRIGGER_BOTTOM_MARGIN);
+                    if (params->busyZone && boxBottom <= threshold && busyFrameLogCounter % 30 == 0)
+                        busylog("WAIT_BOX bottom=%d threshold=%d target=%d counter=%d counted=%d completed=%d",
+                                boxBottom, threshold, params->config.currentLapConfig->busyStopPoint,
+                                stationBoxCounter, stationBoxCounted, params->stationStopCompleted);
                     if (boxBottom > threshold)
                     {
                         // 施工区已停过，不再重复检测
                         if (params->busyZone && params->stationStopCompleted)
+                        {
+                            busylog("BLOCK completed target=%d counter=%d bottom=%d threshold=%d ctrlStop=%d speed=%.2f",
+                                    busyTarget, stationBoxCounter, boxBottom, threshold,
+                                    params->ctrl.stop, params->ctrl.speed);
                             break;
+                        }
 
                         // 施工区跳过前N个框
                         if (params->busyZone)
                         {
-                            // 当前框已计过数，跳过本次检测
-                            if (stationBoxCounted)
-                                break;
-
                             int targetBox = params->config.currentLapConfig->busyStopPoint;
                             if (targetBox > 1 && stationBoxCounter < targetBox - 1)
                             {
+                                // 当前框已计过数，等它消失后再允许计下一个框
+                                if (stationBoxCounted)
+                                {
+                                    busylog("BLOCKED same_box_already_counted target=%d boxCounter=%d bottom=%d threshold=%d",
+                                            targetBox, stationBoxCounter, boxBottom, threshold);
+                                    break;
+                                }
+
                                 stationBoxCounter++;
                                 stationBoxCounted = true;
                                 params->stationStarted = true;
                                 params->stationStopCompleted = false;
+                                busylog("SKIP_BOX skipped=%d target=%d bottom=%d threshold=%d; waiting disappearance",
+                                        stationBoxCounter, targetBox, boxBottom, threshold);
                                 printf("[Station] Skip box #%d (target=%d)\n", stationBoxCounter, targetBox);
                                 break;
                             }
                         }
 
+                        if (params->busyZone && stationBoxCounted)
+                        {
+                            busylog("BLOCKED waiting_box_disappear target=%d boxCounter=%d bottom=%d threshold=%d",
+                                    params->config.currentLapConfig->busyStopPoint,
+                                    stationBoxCounter, boxBottom, threshold);
+                            break;
+                        }
+
                         params->stationStarted = true;
                         pressTimer = 1;
+                        if (params->busyZone)
+                            busylog("TARGET_BOX_TRIGGER target=%d boxCounter=%d bottom=%d threshold=%d pressTimer=1 branch=%d",
+                                    params->config.currentLapConfig->busyStopPoint,
+                                    stationBoxCounter, boxBottom, threshold, params->yforkBranch);
                         printf("[Station] Pressed\n");
                         break;
                     }
                 }
+            }
+            if (params->busyZone && !stationVisible)
+            {
+                if (stationBoxCounted)
+                    busylog("BOX_DISAPPEARED release_counted=1 boxCounter=%d target=%d",
+                            stationBoxCounter, params->config.currentLapConfig->busyStopPoint);
+                stationBoxCounted = false;
             }
         }
         break;
@@ -216,14 +422,26 @@ void FsmStation::run(Mat &img)
     case Step::STOP:
     {
         params->ctrl.stop = true;
+        params->ctrl.speed = 0.0f;
         stopCounter++;
-        printf("[Station] Stop %d/30\n", stopCounter);
-        if (stopCounter > 30) // 停车约1秒
+        if (params->busyZone && (stopCounter == 1 || stopCounter == Tune::STOP_HOLD_FRAMES || stopCounter == Tune::STOP_HOLD_FRAMES + 1))
+            busylog("STOP_HOLD hold=%d/%d ctrlStop=%d speed=%.2f target=%d counter=%d branch=%d",
+                    stopCounter, Tune::STOP_HOLD_FRAMES, params->ctrl.stop, params->ctrl.speed,
+                    params->config.currentLapConfig->busyStopPoint, stationBoxCounter, params->yforkBranch);
+        printf("[Station] Stop %d/%d\n", stopCounter, Tune::STOP_HOLD_FRAMES);
+        if (stopCounter > Tune::STOP_HOLD_FRAMES) // 停车保持
         {
-            printf("[Station] Stop end, resume\n");
+            if (params->busyZone)
+                busylog("STOP_COMPLETE hold=%d target=%d boxCounter=%d branch=%d",
+                        stopCounter, params->config.currentLapConfig->busyStopPoint,
+                        stationBoxCounter, params->yforkBranch);
+            const char *stopPath = params->yforkBranch == 1
+                                       ? "YFORK_LEFT_STATION"
+                                       : (params->yforkBranch == 2 ? "YFORK_RIGHT_STATION" : "NORMAL_STATION");
+            printf("[Station] STOP PATH=%s, stop complete, resume\n", stopPath);
             params->stationStopCompleted = true; // 通知yfork边线突变可以退出了
             setStep(Step::NONE);
-            cooldown = params->busyZone ? 6 : 150; // 施工区0.2秒冷却，其他5秒
+            cooldown = params->busyZone ? Tune::BUSY_COOLDOWN_FRAMES : Tune::NORMAL_COOLDOWN_FRAMES; // 停车后冷却
         }
         break;
     }
@@ -253,6 +471,7 @@ void FsmStation::setStep(Step st)
     stopCounter = 0;
     pressTimer = 0;
     leftBranchDelay = 0;
+    rightBranchDelay = 0;
     params->ctrl.stop = false;
 }
 

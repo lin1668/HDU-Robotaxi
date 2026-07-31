@@ -101,7 +101,7 @@ void FsmStop::run(Mat &img)
             {
                 countSes = 0;
                 timeout = 0;
-                if ((params->results[i].y + params->results[i].height) > ROWSIMAGE * 0.44) // 停车距离计算
+                if ((params->results[i].y + params->results[i].height) > ROWSIMAGE * 0.42) // 停车距离计算
                 {
                     countRec++;
                     break;
