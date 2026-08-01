@@ -281,7 +281,10 @@ public:
             result.type = data[i];
             result.score = data[i + 1];
 
-            if (result.score < score) // 阈值
+            // 暗光下施工区标志的置信度容易低于全局门槛；仅对施工区放宽，
+            // 后续 FsmBusy 仍要求连续多帧确认，避免影响其他类别的误检率。
+            const float threshold = (result.type == LABEL_BUSY && score > 0.12f) ? 0.12f : score;
+            if (result.score < threshold) // 阈值
                 continue;
 
             // turnning....

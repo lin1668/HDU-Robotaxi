@@ -144,7 +144,7 @@ void FsmPark::run(Mat &img)
         if (findSymbols(params->results, LABEL_PARK)) // 搜索AI标志：停车场
             countSes = 0;
 
-        if (countSes > 30)         // 停车场Park标志丢失后，倒计时15场图像开始左转向: 25场
+        if (countSes > 50)         // 停车场Park标志丢失后延迟转入，避免过早转向
             setStep(Step::FORKIN); // 设置停车场新步骤
 
         // 检测入库AI标志
@@ -164,7 +164,7 @@ void FsmPark::run(Mat &img)
         if (fork.score > 0) // 检测到AI标志
         {
             countSes = 0; // 定时入库关闭 | 仅依靠AI标志转向
-            if ((fork.y + fork.height / 2) > ROWSIMAGE * 0.35)
+            if ((fork.y + fork.height / 2) > ROWSIMAGE * 0.38)
                 countRes++;
             if (countRes > 1)
                 setStep(Step::FORKIN); // 设置停车场新步骤
@@ -215,7 +215,7 @@ void FsmPark::run(Mat &img)
                 params->results[i].width > 100 &&
                 params->results[i].height < 130) // 搜索AI标志：岔路箭头
             {
-                if ((params->results[i].y + params->results[i].height) > ROWSIMAGE * 0.4) // 停车距离计算
+                if ((params->results[i].y + params->results[i].height) > ROWSIMAGE * 0.36) // 停车场入口提前停车
                 {
                     stopping = true; // 停车等待标志
                     break;
@@ -452,7 +452,7 @@ void FsmPark::run(Mat &img)
         pointsEdgeLeftPast.push_back(params->track->pointsEdgeLeft); // 记录入库路径
         pointsEdgeRightPast.push_back(params->track->pointsEdgeRight);
 
-        if (timeout > 30)           // 转向超时
+        if (timeout > 22)           // 转向超时
             setStep(Step::PARKING); // 停车完成
         break;
     }

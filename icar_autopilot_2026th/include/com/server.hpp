@@ -86,9 +86,16 @@ public:
         }
         uart.startReceive(); // 启动数据接收子线程
 
-        // 发送初始激活帧，避免STM32首帧丢失
+        // 串口打开会触发DTR复位STM32，等待3秒让MCU启动完毕
+        usleep(3000000);
+
+        // 发送多次激活帧，确保STM32就绪
         uint8_t initFrame[6] = {0xAA, 0x00, 0x00, 0x00, 0x5A, 0xDD};
-        uart.transmitBytes(initFrame, 6);
+        for (int i = 0; i < 10; i++)
+        {
+            uart.transmitBytes(initFrame, 6);
+            usleep(50000); // 50ms间隔
+        }
 
         // 创建套接字
         if ((socketId = socket(AF_INET, SOCK_STREAM, 0)) == 0)

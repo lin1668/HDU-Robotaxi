@@ -37,6 +37,7 @@ public:
     FsmMode getMode();
     void drawTip(Mat &img);  // 在Ctrl图像上标V尖
     void resetLap();
+    void deactivate(); // 当前圈无Y岔路任务时清除残留状态
 
 private:
     /**
@@ -65,8 +66,21 @@ private:
     int holdRow = 0;            // 最后已知V尖行
     int holdCol = 0;            // 最后已知V尖列
     int vlossTimer = 0;         // V尖消失后保持引导的帧计数
+    int forceLeftTimer = 0;       // 强制左转剩余帧数
+    bool forceLeftDone = false;   // 强制左转已执行过（每圈只执行一次）
+    int forkForceLeftTimer = 0;   // FORK达到比例后的左转延迟计时
+    int forkAutoStopTimer = 0;    // FORK触发左转后到自动停车的计时
+    int yforkParkStopCount = 0;   // 自动停车持续帧数
+
+    // ===== 可调参数 =====
+    static constexpr int FORCE_LEFT_FRAMES = 18;          // 强制左转持续帧数
+    static constexpr float FORK_FORCE_LEFT_RATIO = 0.35f; // FORK到画面X%开始计时
+    static constexpr int FORK_FORCE_LEFT_DELAY = 2;      // 达到比例后等N帧强制左转
+    static constexpr int FORK_AUTO_STOP_DELAY = 80;      // FORK触发左转后等N帧自动停车
+    // ====================
 
     void reset(void);
+    void finish();
     bool handle(Mat &img);
     bool detectYfork(Mat &img);
     bool findVTip(const Mat &img);  // 在二值图中扫描V尖

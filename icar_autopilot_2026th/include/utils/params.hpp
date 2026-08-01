@@ -71,6 +71,7 @@ struct Control
     int countAcc = 500;           // 缓加速计数器
     int outlineCooldown = 0;      // outlineCheck冷却计数器（停车场出库后暂时禁用）
     bool yforkReset = false;      // Y型岔路复位标志（park退出时设置）
+    bool busyCrossSlow = false;   // busy圈斑马线消失后减速到0.3
 };
 /**
  * @brief 控制器核心参数
@@ -244,6 +245,7 @@ public:
             config.lap1.yforkLeft = lap1Config.value("yforkLeft", true);
             config.lap1.station = lap1Config["station"];
             config.lap1.obstacle = lap1Config.value("obstacle", true);
+            config.lap1.manualTakeover = lap1Config.value("manualTakeover", false);
             config.lap1.busyStopEnable = lap1Config.value("busyStopEnable", false);
             config.lap1.busyStopPoint = lap1Config.value("busyStopPoint", 0);
 
@@ -262,6 +264,7 @@ public:
             config.lap2.yforkLeft = lap2Config.value("yforkLeft", true);
             config.lap2.station = lap2Config["station"];
             config.lap2.obstacle = lap2Config.value("obstacle", true);
+            config.lap2.manualTakeover = lap2Config.value("manualTakeover", false);
             config.lap2.busyStopEnable = lap2Config.value("busyStopEnable", false);
             config.lap2.busyStopPoint = lap2Config.value("busyStopPoint", 0);
 
@@ -280,6 +283,7 @@ public:
             config.lap3.yforkLeft = lap3Config.value("yforkLeft", true);
             config.lap3.station = lap3Config["station"];
             config.lap3.obstacle = lap3Config.value("obstacle", true);
+            config.lap3.manualTakeover = lap3Config.value("manualTakeover", false);
             config.lap3.busyStopEnable = lap3Config.value("busyStopEnable", false);
             config.lap3.busyStopPoint = lap3Config.value("busyStopPoint", 0);
         }

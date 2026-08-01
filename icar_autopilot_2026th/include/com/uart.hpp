@@ -175,9 +175,8 @@ public:
     {
         try
         {
-            for (size_t i = 0; i < len; i++)
-                serialPort->WriteByte(data[i]);
-            serialPort->DrainWriteBuffer();
+            // 一次性 write() 整个缓冲区，避免逐字节发送产生间隙导致MCU丢帧
+            serialPort->Write(DataBuffer(data, data + len));
         }
         catch (const std::runtime_error &)
         {

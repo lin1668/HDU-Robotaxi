@@ -101,7 +101,10 @@ void FsmStop::run(Mat &img)
             {
                 countSes = 0;
                 timeout = 0;
-                if ((params->results[i].y + params->results[i].height) > ROWSIMAGE * 0.4) // 停车距离计算
+                // 停车场入口需要给入库规划预留距离；普通道闸仍保持原来的停车距离。
+                const bool parkRoute = params->config.currentLapConfig && params->config.currentLapConfig->park;
+                const float stopRatio = parkRoute ? 0.36f : 0.42f;
+                if ((params->results[i].y + params->results[i].height) > ROWSIMAGE * stopRatio) // 停车距离计算
                 {
                     countRec++;
                     break;

@@ -135,9 +135,9 @@ void ManualControlThread::applyManualControl(float *speed, uint16_t *steering) {
 
     // Speed control
     if (manualControl.forward) {
-        *speed = 0.3f;  // Forward speed
+        *speed = 0.15f;  // Forward speed
     } else if (manualControl.backward) {
-        *speed = -0.3f; // Backward speed
+        *speed = -0.15f; // Backward speed
     } else {
         *speed = 0.0f;  // Stop
     }

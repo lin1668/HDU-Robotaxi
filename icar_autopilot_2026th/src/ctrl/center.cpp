@@ -68,19 +68,19 @@ void Center::fitting(shared_ptr<Params> &params)
                     2};
 
             v_center[2] = {
-                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 2 / 3].x +
-                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 2 / 3].x) /
+                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 0.5].x +
+                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 0.5].x) /
                     2,
-                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 2 / 3].y +
-                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 2 / 3].y) /
+                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 0.5].y +
+                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 0.5].y) /
                     2};
 
             v_center[3] = {
-                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 0.9].x +
-                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 0.9].x) /
+                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 0.75].x +
+                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 0.75].x) /
                     2,
-                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 0.9].y +
-                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 0.9].y) /
+                (params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() * 0.75].y +
+                 params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() * 0.75].y) /
                     2};
 
             params->ctrl.centerEdge = Bezier(0.03, v_center);
@@ -157,6 +157,20 @@ void Center::fitting(shared_ptr<Params> &params)
     if (controlNum > 1)
     {
         params->ctrl.center = params->ctrl.center / controlNum;
+    }
+
+    // 中心外偏，让车靠外道跑，避免压内线（像素偏移量，越大越靠外）
+    params->ctrl.center += 10;
+
+    // YFork 左右分支分别调节向左压的偏移量
+    static constexpr int YFORK_LEFT_CENTER_OFFSET = 14;
+    static constexpr int YFORK_RIGHT_CENTER_OFFSET = 10;
+    if (params->mode == FsmMode::YFORK)
+    {
+        if (params->yforkBranch == 1)
+            params->ctrl.center -= YFORK_LEFT_CENTER_OFFSET;
+        else if (params->yforkBranch == 2)
+            params->ctrl.center -= YFORK_RIGHT_CENTER_OFFSET;
     }
 
     if (params->ctrl.center > COLSIMAGE)
@@ -536,8 +550,11 @@ void Center::derailmentCheck(vector<PointX> pointsEdgeLeft, vector<PointX> point
         timeout = 0;
         if (countOut > 20)
         {
-            printf("-----> ICAR Outline!!! <-----\n");
-            exit(0); // 程序退出
+            // 每秒最多输出一次，避免日志泛滥
+            static int outlineLogThrottle = 0;
+            if (outlineLogThrottle++ % 30 == 0)
+                fprintf(stderr, "[FSM] ICAR Outline (count=%d)\n", countOut);
+            // exit(0); // 程序退出（注释以继续运行调试）
         }
     }
     else

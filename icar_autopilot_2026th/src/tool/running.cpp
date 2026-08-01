@@ -380,6 +380,16 @@ public:
             motion->speedControl(params);
         }
 
+        //[07.5] 轻量存图：saveImg开且debug关时，每3帧存一张带叠加的调试图
+        static int saveCnt = 0;
+        if (params->config.saveImg && !params->config.debug && (++saveCnt % 3 == 0))
+        {
+            detection->drawBox(img);
+            center->drawImage(params, img);
+            fsmFactory.yfork->show(img);  // yfork引导线（绿左/黄右/V尖）
+            savePicture(img);
+        }
+
         //[08] 综合显示调试UI窗口
         if (params->config.debug)
         {

@@ -106,7 +106,8 @@ public:
         }
         else if (params->mode == FsmMode::YFORK) // Y型岔路口速度
         {
-            params->ctrl.speed = params->config.velYfork;
+            // 右分支不减速，走正常最高速；左分支用 velYfork
+            params->ctrl.speed = (params->yforkBranch == 2) ? params->config.velCross : params->config.velYfork;
             return;
         }
         else if (params->ctrl.slow) // 减速区速度
@@ -140,6 +141,28 @@ public:
 
         if (params->alertDecelCount > 0)
             params->ctrl.speed = std::max(0.0f, params->ctrl.speed - 0.1f);
+
+        // 每秒输出一次行驶状态日志（~30帧/秒）
+        static int statusLogCnt = 0;
+        if (statusLogCnt++ % 30 == 0) {
+            const char *modeStr = "NORMAL";
+            switch (params->mode) {
+                case FsmMode::PARK:   modeStr = "PARK";   break;
+                case FsmMode::BUSY:   modeStr = "BUSY";   break;
+                case FsmMode::FORK:   modeStr = "FORK";   break;
+                case FsmMode::YFORK:  modeStr = "YFORK";  break;
+                case FsmMode::SLOW:   modeStr = "SLOW";   break;
+                case FsmMode::STOP:   modeStr = "STOP";   break;
+                case FsmMode::STATION:modeStr = "STATION";break;
+                case FsmMode::CROSS:  modeStr = "CROSS";  break;
+                case FsmMode::CURVE:  modeStr = "CURVE";  break;
+                case FsmMode::MANUAL: modeStr = "MANUAL"; break;
+                default: break;
+            }
+            fprintf(stderr, "[STATUS] lap=%d mode=%s speed=%.2f servo=%d center=%.1f\n",
+                params->currentLap, modeStr, params->ctrl.speed,
+                params->ctrl.servo, params->ctrl.center);
+        }
     }
 
     /**

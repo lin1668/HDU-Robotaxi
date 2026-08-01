@@ -198,7 +198,12 @@ public:
 
 
     /**
-     * @brief 速度+方向控制
+     * @brief 蜂鸣器状态（00=不响，01=响）
+     */
+    uint8_t buzzerFlag = 0;
+
+    /**
+     * @brief 速度+方向+蜂鸣器控制（aa + speed(2B) + servo(2B) + buzzer(1B) + dd）
      *
      * @param speed 速度：m/s
      * @param servo 方向：PWM（500~2500）
@@ -209,67 +214,50 @@ void carControl(float speed, uint16_t servo)
     if (countInit >= 50)
         countInit = 50;
     else
-        { // speed = 0.0;
+        {  speed = 0.0;
         }
 
-    uint16_t mcSpeed = (uint16_t)(speed * 100.0f);
-    if (mcSpeed > 100) mcSpeed = 100;
+    int16_t mcSpeed = (int16_t)(speed * 100.0f);
+    if (mcSpeed > 60) mcSpeed = 60;
+    if (mcSpeed < -60) mcSpeed = -60;
 
     uint16_t mcServo;
-    if (servo <= 1100) mcServo = 60;
-    else if (servo >= 1900) mcServo = 120;
-    else mcServo = 90 + (int16_t)(servo - 1500) * 30 / 400;
+    if (servo <= 1100) mcServo = 120;
+    else if (servo >= 1900) mcServo = 60;
+    else mcServo = 90 - (int16_t)(servo - 1500) * 30 / 400;
 
-    fprintf(stderr, "[NEW] mcSpeed=%d mcServo=%d\n", mcSpeed, mcServo);
+    fprintf(stderr, "[NEW] mcSpeed=%d mcServo=%d buzzer=%d\n", mcSpeed, mcServo, buzzerFlag);
 
-    uint8_t buff[6];
+    uint8_t buff[7];
     buff[0] = 0xAA;
-    buff[1] = mcSpeed & 0xFF;
-    buff[2] = (mcSpeed >> 8) & 0xFF;
+    buff[1] = ((uint16_t)mcSpeed >> 8) & 0xFF; // 高位在前（大端）
+    buff[2] = (uint16_t)mcSpeed & 0xFF;        // 低位
     buff[3] = (mcServo >> 8) & 0xFF;
     buff[4] = mcServo & 0xFF;
-    buff[5] = 0xDD;
+    buff[5] = buzzerFlag;                       // 蜂鸣器：00不响，01响
+    buff[6] = 0xDD;
 
-    transmit(buff, 6);
+    transmit(buff, 7);
+    buzzerFlag = 0; // 响一次自动复位
 }
 
     /**
-     * @brief 蜂鸣器音效控制
+     * @brief 蜂鸣器音效控制（触发标志位，随下一帧carControl一起发）
      *
      * @param sound
      */
     void buzzerSound(Buzzer sound)
     {
-        uint8_t buff[6];   // 多发送一个字节
-        uint8_t check = 0; // 校验位
-
-        buff[0] = USB_FRAME_HEAD;  // 帧头
-        buff[1] = USB_ADDR_BUZZER; // 地址
-        buff[2] = 5;               // 帧长
         switch (sound)
         {
-        case Buzzer::BUZZER_OK: // 确认
-            buff[3] = 1;
-            break;
-        case Buzzer::BUZZER_WARNNING: // 报警
-            buff[3] = 2;
-            break;
-        case Buzzer::BUZZER_FINISH: // 完成
-            buff[3] = 3;
-            break;
-        case Buzzer::BUZZER_DING: // 提示
-            buff[3] = 4;
-            break;
-        case Buzzer::BUZZER_START: // 开机
-            buff[3] = 5;
+        case Buzzer::BUZZER_OK:
+        case Buzzer::BUZZER_WARNNING:
+        case Buzzer::BUZZER_FINISH:
+        case Buzzer::BUZZER_DING:
+        case Buzzer::BUZZER_START:
+            buzzerFlag = 1;
             break;
         }
-
-        for (size_t i = 0; i < 4; i++)
-            check += buff[i];
-        buff[4] = check;
-
-        transmit(buff, 6); // 发送数据
     }
 
     /**

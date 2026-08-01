@@ -154,13 +154,17 @@ def start_car_program():
         time.sleep(3)
 
     print(f"\n正在启动小车程序: {ICAR_PATH}")
+    log_dir = os.path.join(BUILD_DIR, "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, "icar.log")
+    log_file = open(log_path, "w")
     subprocess.Popen(
-        ["nohup", "./icar"],
+        ["./icar"],
         cwd=BUILD_DIR,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=log_file,
+        stderr=log_file,
     )
-    print(f"{COUT_GREEN}小车程序已启动{COUT_REST}")
+    print(f"{COUT_GREEN}小车程序已启动，日志: {log_path}{COUT_REST}")
     return True
 
 
