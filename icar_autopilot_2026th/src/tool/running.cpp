@@ -254,7 +254,7 @@ public:
 
         // 初始化TCP通信客户端
         uart = make_shared<Uart>();
-        if (uart->open("/dev/ttyUSB0") < 0)
+        if (uart->open("/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0") < 0)
         {
             printf("[Error]: Uart init failed!!!\n");
             exit(-1);

@@ -21,25 +21,19 @@
  */
 
 #include "fsm/yfork.hpp"
+#include "utils/yfork_diag.hpp"
 #include <cstdio>
 #include <cstdarg>
 #include <ctime>
+#include <string>
 
-// 日志输出到文件
+// 所有YFork事件统一写入带毫秒和行号的诊断日志。
 static void ylog(const char *fmt, ...)
 {
-    static FILE *fp = nullptr;
-    if (!fp) fp = fopen("./yfork.log", "a");
-    if (!fp) return;
-    time_t now = time(nullptr);
-    struct tm *t = localtime(&now);
-    fprintf(fp, "[%02d:%02d:%02d] ", t->tm_hour, t->tm_min, t->tm_sec);
     va_list args;
     va_start(args, fmt);
-    vfprintf(fp, fmt, args);
+    yforkDiagVLog("YFORK_EVENT", fmt, args);
     va_end(args);
-    fprintf(fp, "\n");
-    fflush(fp);
 }
 
 /**
@@ -50,6 +44,7 @@ static void ylog(const char *fmt, ...)
 FsmYfork::FsmYfork(std::shared_ptr<Params> par)
     : FSMState(FsmMode::YFORK, par)
 {
+    yforkDiagReset("FsmYfork constructed");
 }
 
 /**
@@ -58,6 +53,62 @@ FsmYfork::FsmYfork(std::shared_ptr<Params> par)
  */
 FsmYfork::~FsmYfork()
 {
+}
+
+void FsmYfork::logFrame(const char *phase)
+{
+    // PRE/POST are nearly duplicates. A POST sample every 10 frames is enough
+    // to diagnose steering, lane loss and detector timing.
+    static unsigned int frameLogCounter = 0;
+    const bool isPost = phase && phase[0] == 'P' && phase[1] == 'O' &&
+                        phase[2] == 'S' && phase[3] == 'T' && phase[4] == '\0';
+    if (!isPost || (++frameLogCounter % 10) != 1)
+        return;
+
+    std::string detections;
+    for (size_t i = 0; i < params->results.size(); ++i)
+    {
+        const auto &r = params->results[i];
+        if (!detections.empty())
+            detections += ";";
+        detections += "i=" + std::to_string(i) +
+                      ",type=" + std::to_string(r.type) +
+                      ",x=" + std::to_string(r.x) +
+                      ",y=" + std::to_string(r.y) +
+                      ",w=" + std::to_string(r.width) +
+                      ",h=" + std::to_string(r.height) +
+                      ",bottom=" + std::to_string(r.y + r.height);
+    }
+    if (detections.empty())
+        detections = "none";
+
+    const auto &left = params->track->pointsEdgeLeft;
+    const auto &right = params->track->pointsEdgeRight;
+    const auto &center = params->ctrl.centerEdge;
+    const PointX leftFirst = left.empty() ? PointX(-1, -1) : left.front();
+    const PointX leftLast = left.empty() ? PointX(-1, -1) : left.back();
+    const PointX rightFirst = right.empty() ? PointX(-1, -1) : right.front();
+    const PointX rightLast = right.empty() ? PointX(-1, -1) : right.back();
+    const PointX centerLast = center.empty() ? PointX(-1, -1) : center.back();
+
+    yforkDiagLog(
+        "YFORK_FRAME",
+        "%s lap=%d mode=%d step=%d enable=%d selectLeft=%d branch=%d guiding=%d "
+        "forkSeen=%d completed=%d stationStarted=%d stationDone=%d stop=%d "
+        "tip=(%d,%d) hold=(%d,%d) vloss=%d vlossTimer=%d forceLeft=%d "
+        "forkForce=%d autoStop=%d parkStop=%d counter=%d timeout=%d "
+        "trackL=%zu first=(%d,%d) last=(%d,%d) trackR=%zu first=(%d,%d) last=(%d,%d) "
+        "centerEdge=%zu centerLast=(%d,%d) ctrlCenter=%d speed=%.3f servoPWM=%u detections=[%s]",
+        phase, params->currentLap, static_cast<int>(params->mode), static_cast<int>(step),
+        enable, selectLeft, params->yforkBranch, params->yforkGuiding,
+        forkSeen, completed, params->stationStarted, params->stationStopCompleted,
+        params->ctrl.stop, tipRow, tipCol, holdRow, holdCol, vloss, vlossTimer,
+        forceLeftTimer, forkForceLeftTimer, forkAutoStopTimer, yforkParkStopCount,
+        counterYfork, timeout,
+        left.size(), leftFirst.x, leftFirst.y, leftLast.x, leftLast.y,
+        right.size(), rightFirst.x, rightFirst.y, rightLast.x, rightLast.y,
+        center.size(), centerLast.x, centerLast.y, params->ctrl.center,
+        params->ctrl.speed, params->ctrl.servo, detections.c_str());
 }
 
 /**
@@ -81,10 +132,12 @@ FsmMode FsmYfork::getMode()
         return FsmMode::NORMAL;
     }
 
-    ylog("[Yfork] getMode -> YFORK: lap=%d globalYfork=%d lapYfork=%d yforkLeft=%d enable=%d step=%d branch=%d forkSeen=%d completed=%d results=%d",
-         params->currentLap, params->config.yfork, lapYfork,
-         params->config.currentLapConfig->yforkLeft, enable, static_cast<int>(step),
-         params->yforkBranch, forkSeen, completed, (int)params->results.size());
+    static int yforkModeLogCounter = 0;
+    if (yforkModeLogCounter++ % 30 == 0)
+        ylog("[Yfork] getMode -> YFORK: lap=%d globalYfork=%d lapYfork=%d yforkLeft=%d enable=%d step=%d branch=%d forkSeen=%d completed=%d results=%d",
+             params->currentLap, params->config.yfork, lapYfork,
+             params->config.currentLapConfig->yforkLeft, enable, static_cast<int>(step),
+             params->yforkBranch, forkSeen, completed, (int)params->results.size());
     return FsmMode::YFORK;
 }
 
@@ -125,6 +178,8 @@ void FsmYfork::run(Mat &img)
     if (params->mode != FsmMode::NORMAL && params->mode != FsmMode::YFORK)
         return;
 
+    logFrame("PRE");
+
     // ===== 左分支停车兜底：仅由 FORK 触发的左转启动 =====
     // 不提前 return，确保自动停车倒计时期间仍持续执行岔路引导和退出检测。
     if (forkAutoStopTimer > 0 && params->yforkBranch == 1 && !params->stationStopCompleted)
@@ -163,6 +218,7 @@ void FsmYfork::run(Mat &img)
     }
 
     enable = handle(img); // 处理Y型岔路口
+    logFrame("POST");
 }
 
 /**
@@ -493,16 +549,18 @@ bool FsmYfork::handle(Mat &img)
             vector<PointX> leftPoints = {leftStart, leftMid, leftEnd};
             params->track->pointsEdgeLeft = Bezier(0.02f, leftPoints);
 
-            ylog("[Yfork] ENTER: FORCE LEFT frame=%d/%d (remaining=%d), Bezier left edge start=(%d,%d) end=(%d,%d)",
-                 FORCE_LEFT_FRAMES - forceLeftTimer, FORCE_LEFT_FRAMES, forceLeftTimer,
-                 leftStart.x, leftStart.y, leftEnd.x, leftEnd.y);
+            const int forceFrame = FORCE_LEFT_FRAMES - forceLeftTimer;
+            if (forceFrame == 1 || forceLeftTimer == 0)
+                ylog("[Yfork] ENTER: FORCE LEFT frame=%d/%d (remaining=%d), Bezier left edge start=(%d,%d) end=(%d,%d)",
+                     forceFrame, FORCE_LEFT_FRAMES, forceLeftTimer,
+                     leftStart.x, leftStart.y, leftEnd.x, leftEnd.y);
 
             if (forceLeftTimer == 0)
                 ylog("[Yfork] ENTER: FORCE LEFT FINISHED, normal guidance resumes");
         }
 
-        // 引导期间屏蔽station检测；右分支更早放开，尽快恢复巡线并寻找停车框
-        const int stationBlockFrames = selectLeft ? 5 : 2;
+        // 与上游逻辑一致：V尖消失后前5帧屏蔽station，之后一边保持引导一边搜索停车框。
+        const int stationBlockFrames = 5;
         params->yforkGuiding = (holdRow > 0) && (!vloss || vlossTimer < stationBlockFrames);
 
         // 左岔路：V尖消失后左边线突变 → 已右拐驶出岔路
@@ -510,6 +568,12 @@ bool FsmYfork::handle(Mat &img)
         //   - 强制左转期间不检测突变（避免贝塞尔→真实边缘跳变导致假退出）
         bool stationEnabled = params->config.currentLapConfig->station;
         bool stationBusy = stationEnabled && !params->stationStopCompleted;
+        if (stationEnabled && params->stationStopCompleted && !selectLeft)
+        {
+            ylog("[Yfork] ENTER: RIGHT station completed -> finish immediately");
+            finish();
+            return true;
+        }
         if (forceLeftTimer == 0 && !stationBusy && selectLeft && tipRow == 0 && params->track->pointsEdgeLeft.size() > 4)
         {
             int cur = params->track->pointsEdgeLeft.back().y;
@@ -699,8 +763,8 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
         vlossTimer = 0;
     }
 
-    // V尖消失后保留引导；右分支缩短保持时间，尽早恢复自然巡线
-    const int guideHoldFrames = left ? 18 : 0;
+    // 与上游逻辑一致：V尖消失后左右分支都继续保持引导18帧（约0.6秒）。
+    const int guideHoldFrames = 18;
     if (vRow == 0 || vCol == 0)
     {
         if (holdRow > 0 && vlossTimer < guideHoldFrames)
@@ -719,6 +783,12 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
             return;
         }
     }
+
+    // 右分支始终使用预处理得到的自然左右边线巡线。
+    // 实车日志表明，极左侧误检 V 尖会让人工左边线持续把车辆拉出右边界；
+    // 右分支只保留 V 尖/引导状态更新，不写入人工边线。
+    if (!left)
+        return;
 
     if (left)
     {
@@ -774,8 +844,9 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
     }
     else
     {
-        // 右分支：左边缘 = 岛右边界(尖↑) + 直线屏障(尖↓→左下角) (镜像左分支)
-        // 岛在二值图中为黑，从V尖往右找第一个白点=赛道边线就是岛右边界
+        // 右分支：左边缘 = 岛右边界(尖↑) + 虚拟引导边线(尖↓→左下方)。
+        // 从 V 尖向右寻找第一个白点，保证岛段取的是右支路左边界，
+        // 避免通用 Track 把 V 尖左侧的边线误当成右支路左边线而使车身偏左。
         vector<PointX> island;
         for (int row = vRow; row >= ROWSIMAGE / 4; row--)
         {
@@ -803,7 +874,7 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
 
         // 直线屏障：从V尖到底部左侧（镜像左分支）
         vector<PointX> barrier;
-        int endCol = (int)(COLSIMAGE * 0.3f);
+        int endCol = (int)(COLSIMAGE * 0.35f);
         int steps = 15;
         for (int i = 1; i <= steps; i++)
         {

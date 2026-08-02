@@ -120,7 +120,13 @@ void FsmCross::run(Mat &img)
         if (params->currentLap < params->totalLaps)
         {
             params->nextLap();
+            // 仅施工区圈在越过斑马线后提前小幅降速，给暗光下的施工区标志
+            // 更多稳定检测帧；其他圈切换时显式关闭，避免残留到停车场路线。
+            params->ctrl.busyCrossSlow = params->config.currentLapConfig &&
+                                         params->config.currentLapConfig->busy;
             printf("[Cross] Lap incremented to %d\n", params->currentLap);
+            if (params->ctrl.busyCrossSlow)
+                printf("[Cross] Busy approach slow enabled (speed=velCross)\n");
         }
 
         return;

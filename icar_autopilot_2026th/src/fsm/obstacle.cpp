@@ -23,6 +23,13 @@
 #include "fsm/obstacle.hpp"
 #include "utils/tools.hpp"
 
+namespace
+{
+// 锥桶重规划的横向绕行量 = 检测框宽度 × 此系数。
+// 原先为 2，近处小锥桶的轨迹偏移不明显。
+constexpr int CONE_AVOID_WIDTH_MULTIPLIER = 3;
+}
+
 FsmObstacle::FsmObstacle(std::shared_ptr<Params> par)
     : params(par)
 {
@@ -99,8 +106,10 @@ void FsmObstacle::run(Mat &img)
         {
             vector<PointX> points(4); // 三阶贝塞尔曲线
             points[0] = params->track->pointsEdgeLeft[row / 2];
-            points[1] = {resultsObs[index].y + resultsObs[index].height, resultsObs[index].x + resultsObs[index].width * 2};
-            points[2] = {(resultsObs[index].y + resultsObs[index].height + resultsObs[index].y) / 2, resultsObs[index].x + resultsObs[index].width * 2};
+            points[1] = {resultsObs[index].y + resultsObs[index].height * 1.5,
+                         resultsObs[index].x + resultsObs[index].width * CONE_AVOID_WIDTH_MULTIPLIER};
+            points[2] = {(resultsObs[index].y + resultsObs[index].height + resultsObs[index].y) / 2,
+                         resultsObs[index].x + resultsObs[index].width * CONE_AVOID_WIDTH_MULTIPLIER};
             if (resultsObs[index].y > params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() - 1].x)
                 points[3] = params->track->pointsEdgeLeft[params->track->pointsEdgeLeft.size() - 1];
             else
@@ -123,8 +132,10 @@ void FsmObstacle::run(Mat &img)
         {
             vector<PointX> points(4); // 三阶贝塞尔曲线
             points[0] = params->track->pointsEdgeRight[row / 2];
-            points[1] = {resultsObs[index].y + resultsObs[index].height, resultsObs[index].x - resultsObs[index].width * 2};
-            points[2] = {(resultsObs[index].y + resultsObs[index].height + resultsObs[index].y) / 2, resultsObs[index].x - resultsObs[index].width * 2};
+            points[1] = {resultsObs[index].y + resultsObs[index].height,
+                         resultsObs[index].x - resultsObs[index].width * CONE_AVOID_WIDTH_MULTIPLIER};
+            points[2] = {(resultsObs[index].y + resultsObs[index].height + resultsObs[index].y) / 2,
+                         resultsObs[index].x - resultsObs[index].width * CONE_AVOID_WIDTH_MULTIPLIER};
             if (resultsObs[index].y > params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() - 1].x)
                 points[3] = params->track->pointsEdgeRight[params->track->pointsEdgeRight.size() - 1];
             else

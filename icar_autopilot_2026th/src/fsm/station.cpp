@@ -21,9 +21,12 @@
  */
 
 #include "fsm/station.hpp"
+#include "utils/yfork_diag.hpp"
+#include <algorithm>
 #include <cstdarg>
 #include <cstdio>
 #include <ctime>
+#include <string>
 
 static void busylog(const char *fmt, ...)
 {
@@ -71,6 +74,7 @@ void FsmStation::run(Mat &img)
         params->takeoverJustEnded = false;
         stationBoxCounter = 0;
         stationBoxCounted = false;
+        busyBoxLockFrames = 0;
         if (params->busyZone && params->config.currentLapConfig)
         {
             int target = params->config.currentLapConfig->busyStopPoint;
@@ -110,12 +114,90 @@ void FsmStation::run(Mat &img)
         return;
     }
 
+    // 停车场流程拥有停车、倒车和轨迹回放的全部控制权。Station 若在此期间
+    // 继续运行，会把 ctrl.stop 写回 true，覆盖 Park::EXIT 写入的 ctrl.back。
+    // 这里只复位 Station 自身状态，绝不能调用 setStep()/resetLap()，因为它们
+    // 会修改 Park 当前帧写入的 ctrl.stop。
+    if (params->ctrl.parking)
+    {
+        if (step != Step::NONE || pressTimer > 0 || params->stationStarted)
+        {
+            yforkDiagLog("STATION_EVENT",
+                         "PAUSE reason=park_active step=%d press=%d stopHold=%d ctrlStop=%d back=%d",
+                         static_cast<int>(step), pressTimer, stopCounter,
+                         params->ctrl.stop, params->ctrl.back);
+        }
+
+        step = Step::NONE;
+        stopCounter = 0;
+        pressTimer = 0;
+        cooldown = 0;
+        stationBoxCounter = 0;
+        stationBoxCounted = false;
+        busyBoxLockFrames = 0;
+        busyEntryDelay = 0;
+        leftBranchDelay = 0;
+        params->stationStarted = false;
+        params->stationStopCompleted = false;
+        return;
+    }
+
 
     countInit++;
     if (countInit > 999)
         countInit = 999;
     else if (countInit < Tune::STARTUP_IGNORE_FRAMES) // 发车屏蔽
         return;
+
+    // YFork相关停车链每帧写入同一个yfork.log。这里记录的是Station真正
+    // 收到的检测结果和内部计数，能区分未识别、阈值未过、被引导屏蔽和计时阶段。
+    if (params->yforkBranch != 0 || params->stationStarted || params->stationStopCompleted)
+    {
+        std::string stationBoxes;
+        int stationCountDiag = 0;
+        int maxBottomDiag = -1;
+        for (size_t i = 0; i < params->results.size(); ++i)
+        {
+            const auto &r = params->results[i];
+            if (r.type != LABEL_STATION)
+                continue;
+            if (!stationBoxes.empty())
+                stationBoxes += ";";
+            stationBoxes += "i=" + std::to_string(i) +
+                            ",x=" + std::to_string(r.x) +
+                            ",y=" + std::to_string(r.y) +
+                            ",w=" + std::to_string(r.width) +
+                            ",h=" + std::to_string(r.height) +
+                            ",bottom=" + std::to_string(r.y + r.height);
+            stationCountDiag++;
+            maxBottomDiag = std::max(maxBottomDiag, r.y + r.height);
+        }
+        if (stationBoxes.empty())
+            stationBoxes = "none";
+
+        int thresholdDiag = -1;
+        if (params->yforkBranch == 1)
+            thresholdDiag = static_cast<int>(ROWSIMAGE * Tune::LEFT_BRANCH_TRIGGER_RATIO);
+        else if (params->yforkBranch == 2)
+            thresholdDiag = ROWSIMAGE - Tune::RIGHT_BRANCH_TRIGGER_BOTTOM_MARGIN;
+
+        yforkDiagLog(
+            "STATION_FRAME",
+            "lap=%d mode=%d step=%d branch=%d guiding=%d busy=%d target=%d "
+            "results=%zu stationBoxes=%d maxBottom=%d threshold=%d pass=%d "
+            "entryDelay=%d leftDelay=%d press=%d stopHold=%d "
+            "boxCounter=%d counted=%d started=%d completed=%d cooldown=%d "
+            "ctrlStop=%d speed=%.3f boxes=[%s]",
+            params->currentLap, static_cast<int>(params->mode), static_cast<int>(step),
+            params->yforkBranch, params->yforkGuiding, params->busyZone,
+            params->config.currentLapConfig ? params->config.currentLapConfig->busyStopPoint : -1,
+            params->results.size(), stationCountDiag, maxBottomDiag, thresholdDiag,
+            thresholdDiag >= 0 && maxBottomDiag > thresholdDiag,
+            busyEntryDelay, leftBranchDelay, pressTimer, stopCounter,
+            stationBoxCounter, stationBoxCounted, params->stationStarted,
+            params->stationStopCompleted, cooldown, params->ctrl.stop,
+            params->ctrl.speed, stationBoxes.c_str());
+    }
 
     switch (step)
     {
@@ -189,6 +271,7 @@ void FsmStation::run(Mat &img)
         {
             stationBoxCounter = 0;
             stationBoxCounted = false;
+            busyBoxLockFrames = 0;
         }
 
         // 停车后冷却期内不检测
@@ -199,6 +282,23 @@ void FsmStation::run(Mat &img)
                         cooldown, busyTarget, stationBoxCounter, stationCount,
                         params->ctrl.stop, params->ctrl.speed);
             cooldown--;
+            break;
+        }
+
+        // 施工区首框跳过后只固定屏蔽若干帧；不再依赖检测框完全消失，
+        // 避免误检残留把目标停车框长期锁住。
+        if (params->busyZone && busyBoxLockFrames > 0)
+        {
+            if (busyBoxLockFrames == Tune::BUSY_SKIP_LOCK_FRAMES || busyBoxLockFrames == 1)
+                busylog("BLOCK skipLock=%d target=%d counter=%d boxes=%d",
+                        busyBoxLockFrames, busyTarget, stationBoxCounter, stationCount);
+            busyBoxLockFrames--;
+            if (busyBoxLockFrames == 0)
+            {
+                stationBoxCounted = false;
+                busylog("SKIP_LOCK_EXPIRED target=%d counter=%d; target detection enabled",
+                        busyTarget, stationBoxCounter);
+            }
             break;
         }
 
@@ -216,6 +316,13 @@ void FsmStation::run(Mat &img)
                 pressThreshold = Tune::LEFT_BRANCH_PRESS_FRAMES;
             else if (params->yforkBranch == 2)
                 pressThreshold = Tune::RIGHT_BRANCH_PRESS_FRAMES;
+            if (params->yforkBranch != 0 &&
+                (pressTimer == 2 || pressTimer == pressThreshold ||
+                 pressTimer == pressThreshold + 1))
+                yforkDiagLog("STATION_EVENT",
+                             "PRESS_PROGRESS path=%s timer=%d/%d stop=%d speed=%.3f",
+                             params->yforkBranch == 1 ? "YFORK_LEFT" : "YFORK_RIGHT",
+                             pressTimer, pressThreshold, params->ctrl.stop, params->ctrl.speed);
             if (params->busyZone && (pressTimer == 2 || pressTimer == pressThreshold || pressTimer == pressThreshold + 1))
                 busylog("PRESS timer=%d threshold=%d target=%d counter=%d branch=%d ctrlStop=%d speed=%.2f",
                         pressTimer, pressThreshold, params->config.currentLapConfig->busyStopPoint,
@@ -231,6 +338,9 @@ void FsmStation::run(Mat &img)
                                            : (params->yforkBranch == 2 ? "YFORK_RIGHT_STATION" : "NORMAL_STATION");
                 printf("[Station] STOP PATH=%s, pressed +%.1fs, stopping...\n",
                        stopPath, pressThreshold / 30.0f);
+                yforkDiagLog("STATION_EVENT",
+                             "STOP_TRIGGER path=%s timer=%d threshold=%d",
+                             stopPath, pressTimer, pressThreshold);
                 setStep(Step::STOP);
                 params->ctrl.stop = true;
                 params->ctrl.speed = 0.0f;
@@ -246,6 +356,11 @@ void FsmStation::run(Mat &img)
             // 引导期间不检测
             if (params->yforkGuiding)
             {
+                static int leftGuideBlockLogCounter = 0;
+                if (leftGuideBlockLogCounter++ % 10 == 0)
+                    yforkDiagLog("STATION_EVENT",
+                                 "BLOCK reason=yforkGuiding branch=1 leftDelay=%d press=%d results=%zu",
+                                 leftBranchDelay, pressTimer, params->results.size());
                 if (params->busyZone)
                     busylog("BLOCK yforkGuiding branch=1 target=%d counter=%d boxes=%d",
                             params->config.currentLapConfig->busyStopPoint, stationBoxCounter, stationCount);
@@ -269,6 +384,11 @@ void FsmStation::run(Mat &img)
             if (boxSeen)
             {
                 leftBranchDelay++;
+                if (leftBranchDelay == 1 || leftBranchDelay == Tune::LEFT_BRANCH_DELAY_FRAMES)
+                    yforkDiagLog("STATION_EVENT",
+                                 "LEFT_CONFIRM delay=%d/%d threshold=%d",
+                                 leftBranchDelay, Tune::LEFT_BRANCH_DELAY_FRAMES,
+                                 static_cast<int>(ROWSIMAGE * Tune::LEFT_BRANCH_TRIGGER_RATIO));
                 if (leftBranchDelay >= Tune::LEFT_BRANCH_DELAY_FRAMES)
                 {
                     params->stationStarted = true;
@@ -276,7 +396,16 @@ void FsmStation::run(Mat &img)
                     leftBranchDelay = 0;
                     printf("[Station] STOP PATH=YFORK_LEFT_STATION, target box confirmed, delay=%d done\n",
                            Tune::LEFT_BRANCH_DELAY_FRAMES);
+                    yforkDiagLog("STATION_EVENT",
+                                 "TARGET_TRIGGER path=YFORK_LEFT press=1 pressThreshold=%d",
+                                 Tune::LEFT_BRANCH_PRESS_FRAMES);
                 }
+            }
+            else if (leftBranchDelay > 0)
+            {
+                yforkDiagLog("STATION_EVENT",
+                             "LEFT_CONFIRM_GAP keepDelay=%d/%d station box not qualified this frame",
+                             leftBranchDelay, Tune::LEFT_BRANCH_DELAY_FRAMES);
             }
         }
         else
@@ -284,19 +413,22 @@ void FsmStation::run(Mat &img)
             // yfork引导期间不检测station框，避免干扰岔路导航
             if (params->yforkGuiding)
             {
+                static int guideBlockLogCounter = 0;
+                if (guideBlockLogCounter++ % 10 == 0)
+                    yforkDiagLog("STATION_EVENT",
+                                 "BLOCK reason=yforkGuiding branch=%d press=%d results=%zu",
+                                 params->yforkBranch, pressTimer, params->results.size());
                 if (params->busyZone)
                     busylog("BLOCK yforkGuiding branch=0 target=%d counter=%d boxes=%d",
                             params->config.currentLapConfig->busyStopPoint, stationBoxCounter, stationCount);
                 break;
             }
 
-            // 普通station：框到底部才检测
-            bool stationVisible = false;
+            // 普通 station：框到底部才检测
             for (int i = 0; i < params->results.size(); i++)
             {
                 if (params->results[i].type == LABEL_STATION)
                 {
-                    stationVisible = true;
                     // 第一个框在中部检测，第二个框到底部才触发
                     int boxBottom = params->results[i].y + params->results[i].height;
                     bool isFirstBox = params->busyZone && !params->stationStopCompleted &&
@@ -315,8 +447,13 @@ void FsmStation::run(Mat &img)
                         busylog("WAIT_BOX bottom=%d threshold=%d target=%d counter=%d counted=%d completed=%d",
                                 boxBottom, threshold, params->config.currentLapConfig->busyStopPoint,
                                 stationBoxCounter, stationBoxCounted, params->stationStopCompleted);
+                    if (params->yforkBranch == 2 && boxBottom <= threshold)
+                        yforkDiagLog("STATION_EVENT",
+                                     "WAIT_THRESHOLD path=YFORK_RIGHT bottom=%d needGreaterThan=%d",
+                                     boxBottom, threshold);
                     if (boxBottom > threshold)
                     {
+                        // 施工区第一个框需要连续满足3帧，过滤单帧误检并稍微延后停车。
                         // 施工区已停过，不再重复检测
                         if (params->busyZone && params->stationStopCompleted)
                         {
@@ -332,35 +469,32 @@ void FsmStation::run(Mat &img)
                             int targetBox = params->config.currentLapConfig->busyStopPoint;
                             if (targetBox > 1 && stationBoxCounter < targetBox - 1)
                             {
-                                // 当前框已计过数，等它消失后再允许计下一个框
+                                // 首框已经计数：固定锁定期间不重复计数。
                                 if (stationBoxCounted)
                                 {
-                                    busylog("BLOCKED same_box_already_counted target=%d boxCounter=%d bottom=%d threshold=%d",
-                                            targetBox, stationBoxCounter, boxBottom, threshold);
+                                    busylog("BLOCKED skipLock target=%d boxCounter=%d lock=%d bottom=%d threshold=%d",
+                                            targetBox, stationBoxCounter, busyBoxLockFrames, boxBottom, threshold);
                                     break;
                                 }
 
                                 stationBoxCounter++;
                                 stationBoxCounted = true;
+                                busyBoxLockFrames = Tune::BUSY_SKIP_LOCK_FRAMES;
                                 params->stationStarted = true;
                                 params->stationStopCompleted = false;
-                                busylog("SKIP_BOX skipped=%d target=%d bottom=%d threshold=%d; waiting disappearance",
-                                        stationBoxCounter, targetBox, boxBottom, threshold);
+                                busylog("SKIP_BOX skipped=%d target=%d bottom=%d threshold=%d; skipLock=%d",
+                                        stationBoxCounter, targetBox, boxBottom, threshold, busyBoxLockFrames);
                                 printf("[Station] Skip box #%d (target=%d)\n", stationBoxCounter, targetBox);
                                 break;
                             }
                         }
 
-                        if (params->busyZone && stationBoxCounted)
-                        {
-                            busylog("BLOCKED waiting_box_disappear target=%d boxCounter=%d bottom=%d threshold=%d",
-                                    params->config.currentLapConfig->busyStopPoint,
-                                    stationBoxCounter, boxBottom, threshold);
-                            break;
-                        }
-
                         params->stationStarted = true;
                         pressTimer = 1;
+                        yforkDiagLog("STATION_EVENT",
+                                     "TARGET_TRIGGER path=%s bottom=%d threshold=%d press=1 branch=%d",
+                                     params->yforkBranch == 2 ? "YFORK_RIGHT" : "NORMAL_OR_BUSY",
+                                     boxBottom, threshold, params->yforkBranch);
                         if (params->busyZone)
                             busylog("TARGET_BOX_TRIGGER target=%d boxCounter=%d bottom=%d threshold=%d pressTimer=1 branch=%d",
                                     params->config.currentLapConfig->busyStopPoint,
@@ -369,13 +503,6 @@ void FsmStation::run(Mat &img)
                         break;
                     }
                 }
-            }
-            if (params->busyZone && !stationVisible)
-            {
-                if (stationBoxCounted)
-                    busylog("BOX_DISAPPEARED release_counted=1 boxCounter=%d target=%d",
-                            stationBoxCounter, params->config.currentLapConfig->busyStopPoint);
-                stationBoxCounted = false;
             }
         }
         break;
@@ -386,6 +513,14 @@ void FsmStation::run(Mat &img)
         params->ctrl.stop = true;
         params->ctrl.speed = 0.0f;
         stopCounter++;
+        if (params->yforkBranch != 0 &&
+            (stopCounter == 1 || stopCounter == Tune::STOP_HOLD_FRAMES ||
+             stopCounter == Tune::STOP_HOLD_FRAMES + 1))
+            yforkDiagLog("STATION_EVENT",
+                         "STOP_HOLD path=%s hold=%d/%d ctrlStop=%d speed=%.3f",
+                         params->yforkBranch == 1 ? "YFORK_LEFT" : "YFORK_RIGHT",
+                         stopCounter, Tune::STOP_HOLD_FRAMES,
+                         params->ctrl.stop, params->ctrl.speed);
         if (params->busyZone && (stopCounter == 1 || stopCounter == Tune::STOP_HOLD_FRAMES || stopCounter == Tune::STOP_HOLD_FRAMES + 1))
             busylog("STOP_HOLD hold=%d/%d ctrlStop=%d speed=%.2f target=%d counter=%d branch=%d",
                     stopCounter, Tune::STOP_HOLD_FRAMES, params->ctrl.stop, params->ctrl.speed,
@@ -402,6 +537,9 @@ void FsmStation::run(Mat &img)
                                        : (params->yforkBranch == 2 ? "YFORK_RIGHT_STATION" : "NORMAL_STATION");
             printf("[Station] STOP PATH=%s, stop complete, resume\n", stopPath);
             params->stationStopCompleted = true; // 通知yfork边线突变可以退出了
+            yforkDiagLog("STATION_EVENT",
+                         "STOP_COMPLETE path=%s stationStopCompleted=1 hold=%d",
+                         stopPath, stopCounter);
             setStep(Step::NONE);
             cooldown = params->busyZone ? Tune::BUSY_COOLDOWN_FRAMES : Tune::NORMAL_COOLDOWN_FRAMES; // 停车后冷却
         }
@@ -443,6 +581,7 @@ void FsmStation::resetLap()
     cooldown = 0;
     stationBoxCounter = 0;
     stationBoxCounted = false;
+    busyBoxLockFrames = 0;
     busyEntryDelay = 0;
     params->stationStopCompleted = false;
     params->stationStarted = false;

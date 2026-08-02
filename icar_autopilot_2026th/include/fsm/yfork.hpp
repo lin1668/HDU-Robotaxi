@@ -73,7 +73,7 @@ private:
     int yforkParkStopCount = 0;   // 自动停车持续帧数
 
     // ===== 可调参数 =====
-    static constexpr int FORCE_LEFT_FRAMES = 18;          // 强制左转持续帧数
+    static constexpr int FORCE_LEFT_FRAMES = 28;          // 强制左转持续帧数
     static constexpr float FORK_FORCE_LEFT_RATIO = 0.35f; // FORK到画面X%开始计时
     static constexpr int FORK_FORCE_LEFT_DELAY = 2;      // 达到比例后等N帧强制左转
     static constexpr int FORK_AUTO_STOP_DELAY = 80;      // FORK触发左转后等N帧自动停车
@@ -85,4 +85,5 @@ private:
     bool detectYfork(Mat &img);
     bool findVTip(const Mat &img);  // 在二值图中扫描V尖
     void replanTracking(bool left, const Mat &img);  // 车道线重绘（V尖屏障引导）
+    void logFrame(const char *phase); // 每帧完整诊断快照
 };

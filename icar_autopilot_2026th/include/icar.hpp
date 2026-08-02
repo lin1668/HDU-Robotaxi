@@ -33,6 +33,7 @@
 #include "fsm/obstacle.hpp"
 #include "com/client.hpp"
 #include "utils/detection.hpp"
+#include "utils/yfork_diag.hpp"
 #include "utils/show.hpp"
 #include "utils/loop.hpp"
 #include "ctrl/predeal.hpp"
@@ -234,20 +235,15 @@ private:
         static int yforkRouteLogCnt = 0;
         if (yforkRouteLogCnt++ % 30 == 0)
         {
-            FILE *fp = fopen("./yfork.log", yforkRouteLogCnt == 1 ? "w" : "a");
-
-            if (fp)
-            {
-                time_t now = time(nullptr);
-                struct tm *t = localtime(&now);
-                fprintf(fp, "[%02d:%02d:%02d] [YforkRoute] lap=%d mode=%d yforkEnabled=%d yforkLeft=%d fork=%d park=%d busy=%d station=%d results=%zu branch=%d guiding=%d\n",
-                        t->tm_hour, t->tm_min, t->tm_sec,
-                        params->currentLap, static_cast<int>(params->mode), yforkEnabled,
-                        params->config.currentLapConfig->yforkLeft, params->config.fork,
-                        params->config.park, params->config.busy, params->config.station,
-                        params->results.size(), params->yforkBranch, params->yforkGuiding);
-                fclose(fp);
-            }
+            yforkDiagLog("ROUTE",
+                         "lap=%d mode=%d yforkEnabled=%d yforkLeft=%d fork=%d park=%d "
+                         "busy=%d station=%d results=%zu branch=%d guiding=%d "
+                         "stationStarted=%d stationDone=%d",
+                         params->currentLap, static_cast<int>(params->mode), yforkEnabled,
+                         params->config.currentLapConfig->yforkLeft, params->config.fork,
+                         params->config.park, params->config.busy, params->config.station,
+                         params->results.size(), params->yforkBranch, params->yforkGuiding,
+                         params->stationStarted, params->stationStopCompleted);
         }
 
 
@@ -261,7 +257,7 @@ private:
         // ===== 路线隔离：仅在当前圈使能时调用对应FSM =====
         if (params->config.park)
         {
-            if (params->mode == FsmMode::NORMAL || params->mode == FsmMode::PARK || params->mode == FsmMode::CROSS)
+            if (params->mode == FsmMode::NORMAL || params->mode == FsmMode::PARK)
             {
                 fsmFactory.park->run(img);
                 FsmMode mode = fsmFactory.park->getMode();
@@ -597,6 +593,37 @@ public:
         {
             motion->poseControl(params);
             motion->speedControl(params);
+        }
+
+        // 记录本帧最终真正发送给车辆的控制量。前面的YFORK_FRAME/STATION_FRAME
+        // 解释决策来源，这一行用于确认最终是否右打、是否减速、是否下发停车。
+        if ((params->config.currentLapConfig && params->config.currentLapConfig->yfork) ||
+            params->yforkBranch != 0 || params->stationStarted)
+        {
+            int mcServo = 90;
+            if (params->ctrl.servo <= 1100)
+                mcServo = 120;
+            else if (params->ctrl.servo >= 1900)
+                mcServo = 60;
+            else
+                mcServo = 90 - static_cast<int16_t>(params->ctrl.servo - 1500) * 30 / 400;
+
+            const auto &left = params->track->pointsEdgeLeft;
+            const auto &right = params->track->pointsEdgeRight;
+            const PointX leftLast = left.empty() ? PointX(-1, -1) : left.back();
+            const PointX rightLast = right.empty() ? PointX(-1, -1) : right.back();
+            yforkDiagLog("CTRL_FINAL",
+                         "lap=%d mode=%d branch=%d guiding=%d stationStarted=%d stationDone=%d "
+                         "center=%d error=%d centerEdge=%zu speed=%.3f servoPWM=%u mcServo=%d "
+                         "direction=%s stop=%d trackL=%zu last=(%d,%d) trackR=%zu last=(%d,%d)",
+                         params->currentLap, static_cast<int>(params->mode), params->yforkBranch,
+                         params->yforkGuiding, params->stationStarted,
+                         params->stationStopCompleted, params->ctrl.center,
+                         params->ctrl.center - COLSIMAGE / 2, params->ctrl.centerEdge.size(),
+                         params->ctrl.speed, params->ctrl.servo, mcServo,
+                         mcServo > 90 ? "RIGHT" : (mcServo < 90 ? "LEFT" : "STRAIGHT"),
+                         params->ctrl.stop, left.size(), leftLast.x, leftLast.y,
+                         right.size(), rightLast.x, rightLast.y);
         }
 
         //[08] 综合显示调试UI窗口

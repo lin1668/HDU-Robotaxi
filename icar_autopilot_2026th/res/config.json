@@ -1,12 +1,12 @@
 {
   "通用配置参数": {
-    "velLow": 0.2,
-    "velHigh": 0.5,
+    "velLow": 0.3,
+    "velHigh": 0.7,
     "velSlow": 0.3,
-    "velPark": 0.35,
-    "velCurve": 0.25,
+    "velPark": 0.4,
+    "velCurve": 0.3,
     "velBusy": 0.35,
-    "velStop": 0.4,
+    "velStop": 0.35,
     "velCross": 0.4,
     "velYfork": 0.3,
     "runP1": 2.2,
@@ -19,11 +19,11 @@
     "rowCutUp": 10,
     "rowCutBottom": 15,
     "overlap": 0.3,
-    "score": 0.2,
+    "score": 0.18,
     "binary": -1,
     "model": "../res/models/yolov3_mobilenet_v1",
     "video": "../res/samples/sample.mp4",
-    "alertTarget": "cone"
+    "alertTarget": "park"
   },
   "圈数配置": {
     "totalLaps": 3,
@@ -66,7 +66,7 @@
     },
     "lap3": {
       "park": true,
-      "parkSpot": 4,
+      "parkSpot": 3,
       "busy": false,
       "fork": false,
       "slow": true,

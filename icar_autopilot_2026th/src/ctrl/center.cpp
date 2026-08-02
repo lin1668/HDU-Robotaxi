@@ -160,11 +160,12 @@ void Center::fitting(shared_ptr<Params> &params)
     }
 
     // 中心外偏，让车靠外道跑，避免压内线（像素偏移量，越大越靠外）
-    params->ctrl.center += 10;
+    params->ctrl.center += 16;
 
     // YFork 左右分支分别调节向左压的偏移量
-    static constexpr int YFORK_LEFT_CENTER_OFFSET = 14;
-    static constexpr int YFORK_RIGHT_CENTER_OFFSET = 10;
+    static constexpr int YFORK_LEFT_CENTER_OFFSET = 16;
+    // 右分支停车横向略偏左：仅在 YFork 右分支巡线时向右修正少量像素。
+    static constexpr int YFORK_RIGHT_CENTER_OFFSET = 8;
     if (params->mode == FsmMode::YFORK)
     {
         if (params->yforkBranch == 1)

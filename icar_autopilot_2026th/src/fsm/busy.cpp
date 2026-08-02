@@ -110,7 +110,8 @@ void FsmBusy::run(Mat &img)
 
             if (!stationActive && !waitStationStop)
             {
-                // 等待检测左转标志，触发退出转向
+                // 左转标必须连续若干帧满足位置条件，过滤单帧框位置抖动。
+                bool leftQualified = false;
                 for (int i = 0; i < params->results.size(); i++)
                 {
                     if (params->results[i].type == LABEL_LEFT &&
@@ -118,13 +119,29 @@ void FsmBusy::run(Mat &img)
                         params->results[i].height < 120 &&
                         (params->results[i].y + params->results[i].height / 2) > ROWSIMAGE * 0.40)
                     {
-                        exiting = true;
-                        exitTimeout = 0;
-                        countRes = 0;
-                        printf("[Busy] Left sign detected, starting exit turn\n");
+                        leftQualified = true;
                         break;
                     }
                 }
+
+                if (leftQualified)
+                    leftExitConfirmFrames++;
+                else
+                    leftExitConfirmFrames = 0;
+
+                if (leftExitConfirmFrames >= LEFT_EXIT_CONFIRM_FRAMES)
+                {
+                    exiting = true;
+                    exitTimeout = 0;
+                    countRes = 0;
+                    leftExitConfirmFrames = 0;
+                    printf("[Busy] Left sign confirmed for %d frames, starting exit turn\n",
+                           LEFT_EXIT_CONFIRM_FRAMES);
+                }
+            }
+            else
+            {
+                leftExitConfirmFrames = 0;
             }
         }
 
@@ -195,6 +212,8 @@ void FsmBusy::run(Mat &img)
                 // 检测到施工区，立即停车
                 if (countRec > 2)
                 {
+                    // 已确认进入施工区，后续由 velBusy 控速，不再保留斑马线后的预检降速。
+                    params->ctrl.busyCrossSlow = false;
                     if (!drivingThrough)
                     { // 行驶通过模式不重新停车
                         params->ctrl.stop = true;
@@ -475,6 +494,7 @@ void FsmBusy::endManualTakeover()
     exiting = false;
     exitTimeout = 0;
     countRes = 0;
+    leftExitConfirmFrames = 0;
     stationExitCooldown = 0;
     printf("[Busy] Manual takeover ended\n");
 }
@@ -494,6 +514,7 @@ void FsmBusy::resetLap()
     exiting = false;
     exitTimeout = 0;
     countRes = 0;
+    leftExitConfirmFrames = 0;
     stationExitCooldown = 0;
 
     // 停靠区停车状态复位

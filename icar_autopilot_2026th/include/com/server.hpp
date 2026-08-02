@@ -79,7 +79,7 @@ public:
     bool start()
     {
         // 串口初始化
-        if (uart.open("/dev/ttyUSB0") != 0)
+        if (uart.open("/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0") != 0)
         {
             printf("[Error] Uart Open failed!\n");
             return false;

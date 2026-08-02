@@ -57,6 +57,8 @@ private:
     bool exiting = false;           // 退出转向中（看到左转标志后重绘车道线引导转向）
     int exitTimeout = 0;            // 退出转向超时计数器
     int countRes = 0;               // 场景识别计数器（退出转向标志丢失计数）
+    static constexpr int LEFT_EXIT_CONFIRM_FRAMES = 2; // 左转标连续满足位置条件的帧数
+    int leftExitConfirmFrames = 0;
     static constexpr int FIRST_STOP_EXIT_COOLDOWN_FRAMES = 10; // 第一个框停车后等待2秒再检测左转
     int stationExitCooldown = 0;
 

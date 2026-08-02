@@ -110,6 +110,11 @@ public:
             params->ctrl.speed = (params->yforkBranch == 2) ? params->config.velCross : params->config.velYfork;
             return;
         }
+        else if (params->ctrl.busyCrossSlow) // 配置了施工区的当前圈：斑马线后、施工区标志确认前预检降速
+        {
+            params->ctrl.speed = params->config.velCross;
+            return;
+        }
         else if (params->ctrl.slow) // 减速区速度
         {
             params->ctrl.speed = params->config.velSlow;
