@@ -37,7 +37,7 @@ int main(int argc, char const *argv[])
 {
     // 打开摄像头
     // VideoCapture capture("../res/samples/sample.mp4");
-    VideoCapture capture("/dev/video0", CAP_V4L2);
+    VideoCapture capture("/dev/v4l/by-id/usb-XCX-230919-H_PC_Camera_A4-video-index0", CAP_V4L2);
     if (!capture.isOpened())
     {
         cout << "can not open video device " << endl;

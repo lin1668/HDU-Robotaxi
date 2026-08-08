@@ -21,6 +21,33 @@
  */
 
 #include "fsm/stop.hpp"
+#include <cstdarg>
+#include <cstdio>
+#include <ctime>
+
+namespace
+{
+static void stopLog(const char *fmt, ...)
+{
+    static bool firstWrite = true;
+    FILE *fp = fopen("./stop.log", firstWrite ? "w" : "a");
+    firstWrite = false;
+    if (!fp)
+        return;
+
+    time_t now = time(nullptr);
+    tm *t = localtime(&now);
+    if (t)
+        fprintf(fp, "[%02d:%02d:%02d] ", t->tm_hour, t->tm_min, t->tm_sec);
+
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(fp, fmt, args);
+    va_end(args);
+    fprintf(fp, "\n");
+    fclose(fp);
+}
+}
 
 /**
  * @brief Construct a new Fsm Park
@@ -30,6 +57,7 @@
 FsmStop::FsmStop(std::shared_ptr<Params> par)
     : FSMState(FsmMode::STOP, par)
 {
+    stopLog("STOP LOG START");
 }
 
 /**
@@ -74,19 +102,38 @@ void FsmStop::run(Mat &img)
         {
             if (params->results[i].type == LABEL_GATE) // 障碍物：道闸
             {
+                const int bottom = params->results[i].y + params->results[i].height;
+                stopLog("GATE_NONE lap=%d mode=%d idx=%d x=%d y=%d w=%d h=%d bottom=%d score=%.3f countRec=%u countSes=%u results=%zu",
+                        params->currentLap, static_cast<int>(params->mode), i,
+                        params->results[i].x, params->results[i].y,
+                        params->results[i].width, params->results[i].height,
+                        bottom, params->results[i].score,
+                        static_cast<unsigned>(countRec),
+                        static_cast<unsigned>(countSes),
+                        params->results.size());
                 countRec++;
                 break;
             }
         }
 
         if (countRec > 2)
+        {
+            stopLog("STEP NONE->ENABLE lap=%d countRec=%u countSes=%u results=%zu",
+                    params->currentLap, static_cast<unsigned>(countRec),
+                    static_cast<unsigned>(countSes), params->results.size());
             setStep(Step::ENABLE); // 设置新状态
+        }
 
         if (countRec > 0) // 识别AI标志后开始场次计数
         {
             countSes++;
             if (countSes > 4)
+            {
+                stopLog("RESET NONE gate_not_continuous lap=%d countRec=%u countSes=%u results=%zu",
+                        params->currentLap, static_cast<unsigned>(countRec),
+                        static_cast<unsigned>(countSes), params->results.size());
                 setStep(Step::NONE);
+            }
         }
         break;
     }
@@ -104,6 +151,17 @@ void FsmStop::run(Mat &img)
                 // 停车场入口需要给入库规划预留距离；普通道闸仍保持原来的停车距离。
                 const bool parkRoute = params->config.currentLapConfig && params->config.currentLapConfig->park;
                 const float stopRatio = parkRoute ? 0.36f : 0.42f;
+                const int bottom = params->results[i].y + params->results[i].height;
+                const int threshold = (int)(ROWSIMAGE * stopRatio);
+                const bool pass = bottom > threshold;
+                stopLog("GATE_ENABLE lap=%d mode=%d idx=%d x=%d y=%d w=%d h=%d bottom=%d threshold=%d pass=%d score=%.3f countRec=%u countSes=%u timeout=%d parkRoute=%d results=%zu",
+                        params->currentLap, static_cast<int>(params->mode), i,
+                        params->results[i].x, params->results[i].y,
+                        params->results[i].width, params->results[i].height,
+                        bottom, threshold, pass, params->results[i].score,
+                        static_cast<unsigned>(countRec),
+                        static_cast<unsigned>(countSes), timeout, parkRoute,
+                        params->results.size());
                 if ((params->results[i].y + params->results[i].height) > ROWSIMAGE * stopRatio) // 停车距离计算
                 {
                     countRec++;
@@ -113,9 +171,19 @@ void FsmStop::run(Mat &img)
             }
         }
         if (countRec > 2)
+        {
+            stopLog("STEP ENABLE->STOP lap=%d countRec=%u countSes=%u timeout=%d results=%zu",
+                    params->currentLap, static_cast<unsigned>(countRec),
+                    static_cast<unsigned>(countSes), timeout, params->results.size());
             setStep(Step::STOP); // 设置新状态
+        }
         if (countSes >= 10 || timeout > 50)
+        {
+            stopLog("RESET ENABLE timeout lap=%d countRec=%u countSes=%u timeout=%d results=%zu",
+                    params->currentLap, static_cast<unsigned>(countRec),
+                    static_cast<unsigned>(countSes), timeout, params->results.size());
             setStep(Step::NONE); // 设置新状态
+        }
         break;
     }
 
@@ -123,16 +191,32 @@ void FsmStop::run(Mat &img)
     {
         params->ctrl.stop = true; // 停车标志
         countSes++;               // 场次计数器
+        if (countSes == 1 || countSes % 5 == 0)
+            stopLog("STOP_HOLD lap=%d mode=%d countSes=%u countRec=%u timeout=%d ctrlStop=%d speed=%.2f results=%zu",
+                    params->currentLap, static_cast<int>(params->mode),
+                    static_cast<unsigned>(countSes),
+                    static_cast<unsigned>(countRec), timeout, params->ctrl.stop,
+                    params->ctrl.speed, params->results.size());
         for (int i = 0; i < params->results.size(); i++)
         {
             if (params->results[i].type == LABEL_GATE) // 障碍物：道闸
             {
+                const int bottom = params->results[i].y + params->results[i].height;
+                stopLog("GATE_STOP_HOLD lap=%d mode=%d idx=%d x=%d y=%d w=%d h=%d bottom=%d score=%.3f resetHold=1 results=%zu",
+                        params->currentLap, static_cast<int>(params->mode), i,
+                        params->results[i].x, params->results[i].y,
+                        params->results[i].width, params->results[i].height,
+                        bottom, params->results[i].score, params->results.size());
                 countSes = 0;
                 break;
             }
         }
         if (countSes >= 30)
         {
+            stopLog("STOP_RELEASE lap=%d countSes=%u countRec=%u timeout=%d ctrlStopBefore=%d results=%zu",
+                    params->currentLap, static_cast<unsigned>(countSes),
+                    static_cast<unsigned>(countRec), timeout,
+                    params->ctrl.stop, params->results.size());
             setStep(Step::NONE); // 设置新状态
             params->ctrl.stop = false;
         }

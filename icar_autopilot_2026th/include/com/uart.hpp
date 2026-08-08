@@ -28,6 +28,7 @@
 #include <stdint.h>               // 整型数据类
 #include <string.h>
 #include <thread>
+#include <atomic>
 
 using namespace LibSerial;
 using namespace std;
@@ -66,6 +67,7 @@ private:
     std::unique_ptr<std::thread> threadRec; // 串口接收子线程
     std::shared_ptr<SerialPort> serialPort = nullptr;
     bool isOpen = false;
+    std::atomic<bool> receiveRunning{false};
     SerialStruct serialStr; // 串口通信数据结构体
 
     /**
@@ -254,9 +256,10 @@ public:
             return;
 
         // 启动串口接收子线程
+        receiveRunning = true;
         threadRec = std::make_unique<std::thread>([this]()
                                                   {
-      while (1) {
+      while (receiveRunning) {
         receiveCheck(); // 串口接收校验
       } });
     }
@@ -267,15 +270,22 @@ public:
      */
     void close(void)
     {
+        if (!isOpen && threadRec == nullptr)
+            return;
+
         printf(" uart thread exit!\n");
         carControl(0, PWMSERVOMID);
-        threadRec->join();
+        receiveRunning = false;
+        isOpen = false;
         if (serialPort != nullptr)
         {
-            serialPort->Close();
-            serialPort = nullptr;
+            if (serialPort->IsOpen())
+                serialPort->Close();
         }
-        isOpen = false;
+        if (threadRec != nullptr && threadRec->joinable())
+            threadRec->join();
+        threadRec.reset();
+        serialPort = nullptr;
     }
 
     /**

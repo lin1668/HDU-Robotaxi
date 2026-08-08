@@ -249,44 +249,83 @@ private:
 
 
 
+        auto traceMode = [&](const char *stage, FsmMode before) {
+            if (params->mode != before || params->mode == FsmMode::YFORK || before == FsmMode::YFORK || params->currentLap == 3)
+            {
+                yforkDiagLog("FSM_TRACE",
+                             "stage=%s lap=%d before=%d after=%d cfg(yfork=%d park=%d fork=%d station=%d slow=%d busy=%d) results=%zu branch=%d guiding=%d stationStarted=%d stationDone=%d",
+                             stage, params->currentLap, static_cast<int>(before), static_cast<int>(params->mode),
+                             yforkEnabled, params->config.park, params->config.fork, params->config.station,
+                             params->config.slow, params->config.busy, params->results.size(),
+                             params->yforkBranch, params->yforkGuiding, params->stationStarted,
+                             params->stationStopCompleted);
+            }
+        };
+
+        FsmMode modeBefore = params->mode;
         fsmFactory.stop->run(img); // 停车区识别与规划
         params->mode = fsmFactory.stop->getMode();
+        traceMode("stop", modeBefore);
+
+        modeBefore = params->mode;
         fsmFactory.cross->run(img); // 斑马线停车识别与规划
         params->mode = fsmFactory.cross->getMode();
+        traceMode("cross", modeBefore);
 
         // ===== 路线隔离：仅在当前圈使能时调用对应FSM =====
         if (params->config.park)
         {
             if (params->mode == FsmMode::NORMAL || params->mode == FsmMode::PARK)
             {
+                modeBefore = params->mode;
                 fsmFactory.park->run(img);
                 FsmMode mode = fsmFactory.park->getMode();
                 if (mode != FsmMode::NORMAL)
                     params->mode = mode;
+                traceMode("park", modeBefore);
             }
         }
         if (params->config.fork)
         {
             if (params->mode == FsmMode::NORMAL)
             {
+                modeBefore = params->mode;
                 fsmFactory.fork->run(img);
                 params->mode = fsmFactory.fork->getMode();
+                traceMode("fork", modeBefore);
             }
         }
         if (yforkEnabled)
         {
             if (params->mode == FsmMode::NORMAL)
             {
+                modeBefore = params->mode;
+                yforkDiagLog("FSM_TRACE",
+                             "stage=yfork_call lap=%d before=%d cfgYfork=%d lapYfork=%d results=%zu branch=%d guiding=%d",
+                             params->currentLap, static_cast<int>(modeBefore), params->config.yfork,
+                             params->config.currentLapConfig ? params->config.currentLapConfig->yfork : 0,
+                             params->results.size(), params->yforkBranch, params->yforkGuiding);
                 fsmFactory.yfork->run(img);
                 params->mode = fsmFactory.yfork->getMode();
+                traceMode("yfork", modeBefore);
+            }
+            else if (params->currentLap == 3 || params->mode == FsmMode::YFORK)
+            {
+                yforkDiagLog("FSM_TRACE",
+                             "stage=yfork_not_called lap=%d mode=%d cfgYfork=%d lapYfork=%d results=%zu branch=%d guiding=%d",
+                             params->currentLap, static_cast<int>(params->mode), params->config.yfork,
+                             params->config.currentLapConfig ? params->config.currentLapConfig->yfork : 0,
+                             params->results.size(), params->yforkBranch, params->yforkGuiding);
             }
         }
         else
         {
             static int yforkDisabledLogCnt = 0;
-            if (yforkDisabledLogCnt++ % 30 == 0)
+            if (params->currentLap == 3 || yforkDisabledLogCnt++ % 30 == 0)
             {
-                FILE *fp = fopen("./yfork.log", "a");
+                static bool parkRouteLogFirstWrite = true;
+                FILE *fp = fopen("./park.log", parkRouteLogFirstWrite ? "w" : "a");
+                parkRouteLogFirstWrite = false;
                 if (fp)
                 {
                     time_t now = time(nullptr);
@@ -458,7 +497,7 @@ public:
         if (params->config.debug)
             capture = make_shared<cv::VideoCapture>(params->config.video); // 打开本地视频
         else
-            capture = make_shared<cv::VideoCapture>("/dev/video0"); // 打开摄像头
+            capture = make_shared<cv::VideoCapture>("/dev/v4l/by-id/usb-XCX-230919-H_PC_Camera_A4-video-index0"); // 打开摄像头
         if (!capture->isOpened())
         {
             printf("[Error]: Can not open video device!!!\n");

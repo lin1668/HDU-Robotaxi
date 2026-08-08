@@ -261,6 +261,9 @@ void Track::handle(bool isResearch, uint16_t rowStart)
         }
     }
 
+    fillEdgeGap(pointsEdgeLeft, true);
+    fillEdgeGap(pointsEdgeRight, false);
+
     stdevLeft = stdevEdgeCal(pointsEdgeLeft, ROWSIMAGE); // 计算边缘方差
     stdevRight = stdevEdgeCal(pointsEdgeRight, ROWSIMAGE);
 
@@ -268,23 +271,69 @@ void Track::handle(bool isResearch, uint16_t rowStart)
 }
 
 /**
- * @brief 填补边线缺口：当某行没有边线点时，用前后两行插值补上
- *        解决施工区出口等位置赛道边线断开导致丢线的问题
+ * @brief 修复局部边线缺口：补齐缺失行，并插值替换短段贴图像边界的假边线
  */
-void Track::fillEdgeGap(vector<PointX> &edge)
+void Track::fillEdgeGap(vector<PointX> &edge, bool isLeft)
 {
-    if (edge.size() < 2) return;
+    if (edge.size() < 2)
+        return;
+
+    vector<PointX> filled;
+    filled.reserve(edge.size() + 24);
+    filled.push_back(edge.front());
     for (size_t i = 1; i < edge.size(); i++)
     {
-        int rowGap = edge[i].x - edge[i - 1].x;
-        if (rowGap > 1) // 行不连续 → 有缺口
+        int rowGap = edge[i - 1].x - edge[i].x;
+        if (rowGap > 1 && rowGap <= 12) // 边线由下向上排列，只补短小局部缺口
         {
-            for (int r = edge[i - 1].x + 1; r < edge[i].x; r++)
+            for (int offset = 1; offset < rowGap; offset++)
             {
-                float t = (float)(r - edge[i - 1].x) / rowGap;
-                int col = edge[i - 1].y + (edge[i].y - edge[i - 1].y) * t;
-                edge.insert(edge.begin() + i, PointX(r, col));
-                i++;
+                float t = static_cast<float>(offset) / rowGap;
+                int row = edge[i - 1].x - offset;
+                int col = edge[i - 1].y +
+                          static_cast<int>((edge[i].y - edge[i - 1].y) * t);
+                filled.emplace_back(row, col);
+            }
+        }
+        filled.push_back(edge[i]);
+    }
+    edge.swap(filled);
+
+    static constexpr size_t MAX_BORDER_GAP = 20;
+    auto isBorderPoint = [isLeft](const PointX &point)
+    {
+        return isLeft ? point.y <= 1 : point.y >= COLSIMAGE - 2;
+    };
+
+    size_t i = 1;
+    while (i + 1 < edge.size())
+    {
+        if (!isBorderPoint(edge[i]))
+        {
+            i++;
+            continue;
+        }
+
+        size_t gapBegin = i;
+        while (i < edge.size() && isBorderPoint(edge[i]))
+            i++;
+        size_t gapEnd = i;
+
+        // 只修复夹在两段有效边线之间的短缺口，弯道长期出画时不处理。
+        if (gapEnd < edge.size() && gapEnd - gapBegin <= MAX_BORDER_GAP &&
+            !isBorderPoint(edge[gapBegin - 1]) && !isBorderPoint(edge[gapEnd]))
+        {
+            const PointX &before = edge[gapBegin - 1];
+            const PointX &after = edge[gapEnd];
+            int totalRows = before.x - after.x;
+            if (totalRows > 0)
+            {
+                for (size_t j = gapBegin; j < gapEnd; j++)
+                {
+                    float t = static_cast<float>(before.x - edge[j].x) / totalRows;
+                    edge[j].y = before.y +
+                                static_cast<int>((after.y - before.y) * t);
+                }
             }
         }
     }

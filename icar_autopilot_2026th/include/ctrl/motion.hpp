@@ -74,6 +74,18 @@ public:
             params->ctrl.speed = -params->config.velPark;
             return;
         }
+        const bool trackLost =
+            (params->track->pointsEdgeLeft.size() < ROWSIMAGE / 8 &&
+             params->track->pointsEdgeRight.size() < ROWSIMAGE / 8) ||
+            params->ctrl.centerEdge.size() < 5;
+        if (trackLost &&
+            params->mode != FsmMode::PARK &&
+            params->mode != FsmMode::STOP &&
+            params->mode != FsmMode::YFORK)
+        {
+            params->ctrl.speed = params->config.velSlow;
+            return;
+        }
         if (params->mode == FsmMode::STOP) // 停车区速度
         {
             params->ctrl.speed = params->config.velStop;
@@ -112,7 +124,7 @@ public:
         }
         else if (params->ctrl.busyCrossSlow) // 配置了施工区的当前圈：斑马线后、施工区标志确认前预检降速
         {
-            params->ctrl.speed = params->config.velCross;
+            params->ctrl.speed = std::max(0.0f, params->config.velCross - 0.1f);
             return;
         }
         else if (params->ctrl.slow) // 减速区速度

@@ -95,7 +95,8 @@ def run_visual_flow(vllm):
     print("    摄像头拍照识别 — 按提示确认是否写入配置")
     print("=" * 60)
 
-    cap = cv2.VideoCapture(0)
+    camera_device = "/dev/v4l/by-id/usb-XCX-230919-H_PC_Camera_A4-video-index0"
+    cap = cv2.VideoCapture(camera_device)
     if not cap.isOpened():
         print(f"{COUT_RED}[摄像头] 无法打开摄像头{COUT_REST}")
         return None

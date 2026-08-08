@@ -68,15 +68,17 @@ private:
     int vlossTimer = 0;         // V尖消失后保持引导的帧计数
     int forceLeftTimer = 0;       // 强制左转剩余帧数
     bool forceLeftDone = false;   // 强制左转已执行过（每圈只执行一次）
+    bool exitRightBiasArmed = false; // 出 YFork 后靠右保护已触发；同一次 YFork 完成后不再反复续时
     int forkForceLeftTimer = 0;   // FORK达到比例后的左转延迟计时
     int forkAutoStopTimer = 0;    // FORK触发左转后到自动停车的计时
     int yforkParkStopCount = 0;   // 自动停车持续帧数
 
     // ===== 可调参数 =====
-    static constexpr int FORCE_LEFT_FRAMES = 28;          // 强制左转持续帧数
-    static constexpr float FORK_FORCE_LEFT_RATIO = 0.35f; // FORK到画面X%开始计时
-    static constexpr int FORK_FORCE_LEFT_DELAY = 2;      // 达到比例后等N帧强制左转
+    static constexpr int FORCE_LEFT_FRAMES = 18;          // 强制左转持续帧数
+    static constexpr float FORK_FORCE_LEFT_RATIO = 0.26f; // FORK到画面X%开始计时
+    static constexpr int FORK_FORCE_LEFT_DELAY = 0;      // 达到比例后等N帧强制左转
     static constexpr int FORK_AUTO_STOP_DELAY = 80;      // FORK触发左转后等N帧自动停车
+    static constexpr int RIGHT_GUIDE_OFFSET = 10;         // 右分支引导时左边线向右平移像素
     // ====================
 
     void reset(void);

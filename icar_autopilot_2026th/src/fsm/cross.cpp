@@ -126,7 +126,11 @@ void FsmCross::run(Mat &img)
                                          params->config.currentLapConfig->busy;
             printf("[Cross] Lap incremented to %d\n", params->currentLap);
             if (params->ctrl.busyCrossSlow)
-                printf("[Cross] Busy approach slow enabled (speed=velCross)\n");
+                printf("[Cross] BUSY_CROSS_SLOW TRIGGERED lap=%d reason=cross_passed speed=velCross-0.1\n",
+                       params->currentLap);
+            else
+                printf("[Cross] BUSY_CROSS_SLOW NOT_TRIGGERED lap=%d reason=next_lap_busy_disabled\n",
+                       params->currentLap);
         }
 
         return;

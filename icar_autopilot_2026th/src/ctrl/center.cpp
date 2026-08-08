@@ -21,9 +21,33 @@
  */
 
 #include "ctrl/center.hpp"
+#include <cstdarg>
+#include <cstdio>
+#include <ctime>
 
 using namespace cv;
 using namespace std;
+
+static void centerTurnBiasLog(const char *fmt, ...)
+{
+    static bool firstWrite = true;
+    FILE *fp = fopen("./obstacle.log", firstWrite ? "w" : "a");
+    firstWrite = false;
+    if (!fp)
+        return;
+
+    time_t now = time(nullptr);
+    tm *t = localtime(&now);
+    if (t)
+        fprintf(fp, "[%02d:%02d:%02d] ", t->tm_hour, t->tm_min, t->tm_sec);
+
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(fp, fmt, args);
+    va_end(args);
+    fprintf(fp, "\n");
+    fclose(fp);
+}
 
 /**
  * @brief 控制中心计算
@@ -159,16 +183,98 @@ void Center::fitting(shared_ptr<Params> &params)
         params->ctrl.center = params->ctrl.center / controlNum;
     }
 
-    // 中心外偏，让车靠外道跑，避免压内线（像素偏移量，越大越靠外）
-    params->ctrl.center += 16;
+    // YFork 内部由 yfork.cpp 的虚拟边线和分支偏移接管，不能再叠加普通靠右补偿；
+    // 否则左分支刚识别出来时，普通右偏会把“向左进岔”的指令抵消掉。
+    const bool yforkRouteActive =
+        params->mode == FsmMode::YFORK ||
+        params->yforkBranch != 0 ||
+        params->yforkGuiding;
 
-    // YFork 左右分支分别调节向左压的偏移量
-    static constexpr int YFORK_LEFT_CENTER_OFFSET = 16;
+    // 中心外偏：普通赛道基础右偏，让左弯/单边线时也能靠外侧跑。
+    const bool trackStableForOuterBias =
+        params->track->pointsEdgeLeft.size() > ROWSIMAGE / 2 &&
+        params->track->pointsEdgeRight.size() > ROWSIMAGE / 2 &&
+        params->ctrl.centerEdge.size() > 20;
+    // 左弯内侧视野盲区时，左边线经常会先消失；只要右边线和中心线足够可信，
+    // 就允许小幅靠右，避免把“左线消失”这个典型左弯信号误判成不稳定而不补偿。
+    const bool leftTurnOuterBiasReady =
+        params->track->pointsEdgeRight.size() > ROWSIMAGE / 3 &&
+        params->ctrl.centerEdge.size() > 20;
+    if (!yforkRouteActive && params->mode != FsmMode::PARK && !params->busyZone)
+        params->ctrl.center += 8;
+
+    // Slow zone / after YFork exit: add +6 here, so the base +8 becomes +14.
+    if (!yforkRouteActive &&
+        trackStableForOuterBias &&
+        (params->ctrl.slow || params->ctrl.yforkExitCooldown > 0) &&
+        !params->ctrl.obstacleSeen)
+        params->ctrl.center += 6;
+
+    // 左弯视野盲区补偿：只加一点点；过大就会从右侧外道冲出去。
+    const bool turnBiasModeOk =
+        params->mode == FsmMode::NORMAL ||
+        params->mode == FsmMode::CURVE ||
+        params->mode == FsmMode::CROSS ||
+        params->mode == FsmMode::SLOW;
+    const bool turnBiasActive =
+        leftTurnOuterBiasReady &&
+        style == "LEFT" && !params->ctrl.obstacleSeen &&
+        turnBiasModeOk &&
+        !yforkRouteActive;
+    static bool turnBiasWasActive = false;
+    static int turnBiasLogCounter = 0;
+    static int turnBiasBlockCounter = 0;
+    const int turnBiasCenterBefore = params->ctrl.center;
+    if (turnBiasActive)
+    {
+        constexpr int TURN_EXTRA_OFFSET = 10;
+        params->ctrl.center += TURN_EXTRA_OFFSET;
+        ++turnBiasLogCounter;
+        if (!turnBiasWasActive || turnBiasLogCounter % 10 == 0)
+            centerTurnBiasLog("%s lap=%d mode=%d applied=%d center=%d->%d style=%s stable=%d turnReady=%d slow=%d obstacleSeen=%d edge=%zu trackL=%zu trackR=%zu speed=%.2f",
+                              turnBiasWasActive ? "CENTER_TURN_BIAS_UPDATE" : "CENTER_TURN_BIAS_ENTER",
+                              params->currentLap, static_cast<int>(params->mode),
+                              TURN_EXTRA_OFFSET, turnBiasCenterBefore, params->ctrl.center,
+                              style.c_str(), trackStableForOuterBias, leftTurnOuterBiasReady, params->ctrl.slow,
+                              params->ctrl.obstacleSeen, params->ctrl.centerEdge.size(),
+                              params->track->pointsEdgeLeft.size(),
+                              params->track->pointsEdgeRight.size(), params->ctrl.speed);
+        turnBiasWasActive = true;
+        turnBiasBlockCounter = 0;
+    }
+    else
+    {
+        if (turnBiasWasActive)
+            centerTurnBiasLog("CENTER_TURN_BIAS_EXIT lap=%d mode=%d center=%d style=%s stable=%d turnReady=%d modeOk=%d slow=%d obstacleSeen=%d edge=%zu trackL=%zu trackR=%zu speed=%.2f",
+                              params->currentLap, static_cast<int>(params->mode),
+                              params->ctrl.center, style.c_str(), trackStableForOuterBias,
+                              leftTurnOuterBiasReady, turnBiasModeOk, params->ctrl.slow, params->ctrl.obstacleSeen,
+                              params->ctrl.centerEdge.size(),
+                              params->track->pointsEdgeLeft.size(),
+                              params->track->pointsEdgeRight.size(), params->ctrl.speed);
+
+        turnBiasWasActive = false;
+        turnBiasLogCounter = 0;
+
+        if (style == "LEFT" && ++turnBiasBlockCounter % 15 == 0)
+            centerTurnBiasLog("CENTER_TURN_BIAS_BLOCK lap=%d mode=%d center=%d style=%s stable=%d turnReady=%d modeOk=%d slow=%d obstacleSeen=%d edge=%zu trackL=%zu trackR=%zu speed=%.2f",
+                              params->currentLap, static_cast<int>(params->mode),
+                              params->ctrl.center, style.c_str(), trackStableForOuterBias,
+                              leftTurnOuterBiasReady, turnBiasModeOk, params->ctrl.slow, params->ctrl.obstacleSeen,
+                              params->ctrl.centerEdge.size(),
+                              params->track->pointsEdgeLeft.size(),
+                              params->track->pointsEdgeRight.size(), params->ctrl.speed);
+    }
+
+    // YFork 分支横向补偿：
+    // 左分支强制左转阶段已经由 yfork.cpp 生成引导线，不再额外减小 center，
+    // 避免在当前舵机符号下把左分支反向压成右打。
+    static constexpr int YFORK_LEFT_CENTER_OFFSET = 12;
     // 右分支停车横向略偏左：仅在 YFork 右分支巡线时向右修正少量像素。
-    static constexpr int YFORK_RIGHT_CENTER_OFFSET = 8;
+    static constexpr int YFORK_RIGHT_CENTER_OFFSET = 4;
     if (params->mode == FsmMode::YFORK)
     {
-        if (params->yforkBranch == 1)
+        if (params->yforkBranch == 1 && !params->yforkStationBoxFallback)
             params->ctrl.center -= YFORK_LEFT_CENTER_OFFSET;
         else if (params->yforkBranch == 2)
             params->ctrl.center -= YFORK_RIGHT_CENTER_OFFSET;

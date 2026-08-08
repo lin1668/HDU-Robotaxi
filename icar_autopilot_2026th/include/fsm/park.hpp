@@ -53,8 +53,10 @@ public:
   bool stopping = false; // 停车等待标志
   bool fitting = false;  // 控制中心拟合标志
   uint16_t speedUp = 0;  // 出库加速延迟计数器
-  float spotUp = 0.49;    // 上停车位距离像素百分比[0,1]
-  float spotDown = 0.35;  // 下停车位距离像素百分比[0,1]
+  float spotUp = 0.51;    // 上停车位距离像素百分比[0,1]
+  float spotDown = 0.37;  // 下停车位距离像素百分比[0,1]
+  float rightSpotEnterDelay = -0.03; // 4号右侧车位入库触发额外延后比例；越大越晚开始右转入库
+  float rightNearEnterDelay = -0.06; // 3号右侧近处车位入库触发额外延后比例；越大越晚开始右转入库
 
 private:
   /**
@@ -119,6 +121,15 @@ private:
   bool waiting = false;                                           // 停车等待使能
   int countWait = 0;                                              // 停车等待计数器
   int countIn = 0;                                                // 入库矫正计数器
+  bool slowFallbackArmed = false;                                 // 出库后慢行保险已启动
+  uint16_t slowFallbackCount = 0;                                 // 等待正常进入慢行区的帧数
+  bool choiceDone = false;                                        // 本次停车场流程已执行CHOICE入库
+  uint16_t exitExtend = 0;                                        // EXIT路径耗尽后额外倒车帧数
+  static constexpr uint16_t EXIT_EXTEND_FRAMES = 4;              // 1号位路径耗尽后额外倒车
+  static constexpr uint16_t SPOT2_EXIT_EXTEND_FRAMES = 4;        // 2号位缩短额外倒车，减少出库等待
+  static constexpr uint16_t RIGHT_EXIT_EXTEND_FRAMES = 3;        // 3号右侧车位路径耗尽后额外倒车
+  static constexpr uint16_t SPOT4_EXIT_EXTEND_FRAMES = 6;        // 4号位单独多倒一点，帮助车身出库后回正
+  static constexpr uint16_t SLOW_FALLBACK_FRAMES = 20;            // 约3秒未进入慢行则强制触发
   vector<vector<PointX>> pointsEdgeLeftPast, pointsEdgeRightPast; // 记录赛道入库车道线
 
   void setStep(Step st);

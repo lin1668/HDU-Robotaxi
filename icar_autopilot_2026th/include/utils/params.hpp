@@ -71,7 +71,11 @@ struct Control
     int countAcc = 500;           // 缓加速计数器
     int outlineCooldown = 0;      // outlineCheck冷却计数器（停车场出库后暂时禁用）
     bool yforkReset = false;      // Y型岔路复位标志（park退出时设置）
+    int yforkCooldown = 0;        // Park出库左转完成后暂时屏蔽YFork/CHOICE误触发
+    bool forceSlowRequest = false; // Park出库后未识别到慢行区时，强制进入一次慢行
     bool busyCrossSlow = false;   // 当前圈配置busy时，斑马线后至施工区确认前的小幅降速
+    bool obstacleSeen = false;    // 当前帧检测到障碍物（锥桶/行人）
+    int yforkExitCooldown = 0;    // 出 YFork 后靠右保护剩余帧数；每帧递减，归零后恢复普通巡线
 };
 /**
  * @brief 控制器核心参数
@@ -323,6 +327,7 @@ public:
     bool stationStarted = false;        // station已触发检测（pressTimer启动）
     bool yforkGuiding = false;          // yfork正在强制引导转弯（期间station不检测）
     int yforkBranch = 0;                // yfork分支：0=无, 1=左, 2=右
+    bool yforkStationBoxFallback = false; // yfork由STATION_BOX兜底触发，station使用独立停车参数
     bool busyZone = false;              // 施工区标志（station据此调整检测参数）
     bool takeoverJustEnded = false;     // 手动接管刚结束（station据此复位计数）
     int alertCountdown = 0;             // 蜂鸣器报警倒计时（帧数）

@@ -60,8 +60,19 @@ FsmMode FsmSlow::getMode()
  */
 void FsmSlow::run(Mat &img)
 {
-    if (!params->config.slow) // 该模式未开启
+    if (!params->config.slow || params->config.currentLapConfig == nullptr ||
+        !params->config.currentLapConfig->slow) // 该模式未开启
+    {
+        params->ctrl.forceSlowRequest = false;
         return;
+    }
+
+    if (params->ctrl.forceSlowRequest)
+    {
+        params->ctrl.forceSlowRequest = false;
+        if (step == Step::NONE)
+            setStep(Step::ENABLE);
+    }
 
     switch (step)
     {

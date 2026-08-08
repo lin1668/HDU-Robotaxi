@@ -139,6 +139,7 @@ void FsmStation::run(Mat &img)
         leftBranchDelay = 0;
         params->stationStarted = false;
         params->stationStopCompleted = false;
+        params->yforkStationBoxFallback = false;
         return;
     }
 
@@ -244,6 +245,29 @@ void FsmStation::run(Mat &img)
                     params->ctrl.stop, params->ctrl.speed);
         }
 
+        // YFork 圈必须先由 YFork 判出左右分支；branch 还没出来时禁止普通 Station 抢停，
+        // 避免右分支入口漏检 YFork 后被 NORMAL_STATION 停到中间岛附近。
+        const bool waitingYforkBranch =
+            !params->busyZone &&
+            params->config.yfork &&
+            params->config.currentLapConfig &&
+            params->config.currentLapConfig->yfork &&
+            params->yforkBranch == 0 &&
+            !params->stationStarted &&
+            !params->stationStopCompleted;
+        if (waitingYforkBranch)
+        {
+            static int yforkBranchWaitLogCounter = 0;
+            if ((stationCount > 0 && yforkBranchWaitLogCounter % 10 == 0) ||
+                yforkBranchWaitLogCounter % 30 == 0)
+                yforkDiagLog("STATION_EVENT",
+                             "BLOCK reason=waiting_yfork_branch stationBoxes=%d maxBottom=%d lap=%d branch=%d guiding=%d",
+                             stationCount, maxBottom, params->currentLap,
+                             params->yforkBranch, params->yforkGuiding);
+            yforkBranchWaitLogCounter++;
+            break;
+        }
+
         // 施工区进入后延迟检测（让车走过前面的框）
         if (params->busyZone && busyEntryDelay > 0)
         {
@@ -302,6 +326,32 @@ void FsmStation::run(Mat &img)
             break;
         }
 
+        // 施工区第一个停车框靠近阶段就给小幅左偏引导；不能等到 pressTimer 触发后才修。
+        const bool busyFirstStopGuide = params->busyZone &&
+                                        params->config.currentLapConfig &&
+                                        params->config.currentLapConfig->busyStopPoint == 1 &&
+                                        stationBoxCounter == 0 &&
+                                        params->yforkBranch == 0 &&
+                                        !params->stationStopCompleted;
+        if (busyFirstStopGuide)
+        {
+            static bool busyFirstGuideLogged = false;
+            for (auto &point : params->track->pointsEdgeLeft)
+                point.y = std::max(0, point.y - Tune::BUSY_FIRST_GUIDE_LEFT_OFFSET);
+            for (auto &point : params->track->pointsEdgeRight)
+                point.y = std::max(0, point.y - Tune::BUSY_FIRST_GUIDE_LEFT_OFFSET);
+            if (!busyFirstGuideLogged)
+            {
+                busylog("FIRST_GUIDE offset=%d target=%d counter=%d press=%d trackL=%zu trackR=%zu",
+                        Tune::BUSY_FIRST_GUIDE_LEFT_OFFSET,
+                        params->config.currentLapConfig->busyStopPoint,
+                        stationBoxCounter, pressTimer,
+                        params->track->pointsEdgeLeft.size(),
+                        params->track->pointsEdgeRight.size());
+                busyFirstGuideLogged = true;
+            }
+        }
+
         if (pressTimer > 0)
         {
             pressTimer++;
@@ -313,15 +363,20 @@ void FsmStation::run(Mat &img)
                 stationBoxCounter >= params->config.currentLapConfig->busyStopPoint - 1)
                 pressThreshold = Tune::BUSY_TARGET_PRESS_FRAMES;
             if (params->yforkBranch == 1)
-                pressThreshold = Tune::LEFT_BRANCH_PRESS_FRAMES;
+                pressThreshold = params->yforkStationBoxFallback
+                                     ? Tune::LEFT_BRANCH_FALLBACK_PRESS_FRAMES
+                                     : Tune::LEFT_BRANCH_PRESS_FRAMES;
             else if (params->yforkBranch == 2)
                 pressThreshold = Tune::RIGHT_BRANCH_PRESS_FRAMES;
+            const char *yforkPressPath = params->yforkBranch == 1
+                                             ? (params->yforkStationBoxFallback ? "YFORK_LEFT_FALLBACK" : "YFORK_LEFT")
+                                             : "YFORK_RIGHT";
             if (params->yforkBranch != 0 &&
                 (pressTimer == 2 || pressTimer == pressThreshold ||
                  pressTimer == pressThreshold + 1))
                 yforkDiagLog("STATION_EVENT",
                              "PRESS_PROGRESS path=%s timer=%d/%d stop=%d speed=%.3f",
-                             params->yforkBranch == 1 ? "YFORK_LEFT" : "YFORK_RIGHT",
+                             yforkPressPath,
                              pressTimer, pressThreshold, params->ctrl.stop, params->ctrl.speed);
             if (params->busyZone && (pressTimer == 2 || pressTimer == pressThreshold || pressTimer == pressThreshold + 1))
                 busylog("PRESS timer=%d threshold=%d target=%d counter=%d branch=%d ctrlStop=%d speed=%.2f",
@@ -334,7 +389,7 @@ void FsmStation::run(Mat &img)
                             pressTimer, pressThreshold, params->config.currentLapConfig->busyStopPoint,
                             stationBoxCounter, params->yforkBranch, params->ctrl.stop, params->ctrl.speed);
                 const char *stopPath = params->yforkBranch == 1
-                                           ? "YFORK_LEFT_STATION"
+                                           ? (params->yforkStationBoxFallback ? "YFORK_LEFT_FALLBACK_STATION" : "YFORK_LEFT_STATION")
                                            : (params->yforkBranch == 2 ? "YFORK_RIGHT_STATION" : "NORMAL_STATION");
                 printf("[Station] STOP PATH=%s, pressed +%.1fs, stopping...\n",
                        stopPath, pressThreshold / 30.0f);
@@ -396,9 +451,13 @@ void FsmStation::run(Mat &img)
                     leftBranchDelay = 0;
                     printf("[Station] STOP PATH=YFORK_LEFT_STATION, target box confirmed, delay=%d done\n",
                            Tune::LEFT_BRANCH_DELAY_FRAMES);
+                    int leftPressThreshold = params->yforkStationBoxFallback
+                                                 ? Tune::LEFT_BRANCH_FALLBACK_PRESS_FRAMES
+                                                 : Tune::LEFT_BRANCH_PRESS_FRAMES;
                     yforkDiagLog("STATION_EVENT",
-                                 "TARGET_TRIGGER path=YFORK_LEFT press=1 pressThreshold=%d",
-                                 Tune::LEFT_BRANCH_PRESS_FRAMES);
+                                 "TARGET_TRIGGER path=%s press=1 pressThreshold=%d",
+                                 params->yforkStationBoxFallback ? "YFORK_LEFT_FALLBACK" : "YFORK_LEFT",
+                                 leftPressThreshold);
                 }
             }
             else if (leftBranchDelay > 0)
@@ -533,7 +592,7 @@ void FsmStation::run(Mat &img)
                         stopCounter, params->config.currentLapConfig->busyStopPoint,
                         stationBoxCounter, params->yforkBranch);
             const char *stopPath = params->yforkBranch == 1
-                                       ? "YFORK_LEFT_STATION"
+                                       ? (params->yforkStationBoxFallback ? "YFORK_LEFT_FALLBACK_STATION" : "YFORK_LEFT_STATION")
                                        : (params->yforkBranch == 2 ? "YFORK_RIGHT_STATION" : "NORMAL_STATION");
             printf("[Station] STOP PATH=%s, stop complete, resume\n", stopPath);
             params->stationStopCompleted = true; // 通知yfork边线突变可以退出了
@@ -585,4 +644,5 @@ void FsmStation::resetLap()
     busyEntryDelay = 0;
     params->stationStopCompleted = false;
     params->stationStarted = false;
+    params->yforkStationBoxFallback = false;
 }

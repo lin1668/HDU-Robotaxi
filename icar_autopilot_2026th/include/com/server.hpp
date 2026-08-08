@@ -33,7 +33,8 @@ using namespace std;
 class Server
 {
 private:
-    int socketId, newSocket;
+    int socketId = -1;
+    int newSocket = -1;
     struct sockaddr_in address;
     std::thread threadRes; // 接收子线程
 
@@ -112,6 +113,8 @@ public:
         if (bind(socketId, (struct sockaddr *)&address, sizeof(address)) < 0)
         {
             perror("bind failed");
+            close(socketId);
+            socketId = -1;
             return false;
         }
 
@@ -146,10 +149,21 @@ public:
      */
     void closeServer()
     {
-        // 关闭套接字
-        threadRes.join();
-        close(newSocket);
-        close(socketId);
+        // 先关闭套接字，解除accept/recv阻塞，再回收接收线程。
+        if (newSocket >= 0)
+        {
+            shutdown(newSocket, SHUT_RDWR);
+            close(newSocket);
+            newSocket = -1;
+        }
+        if (socketId >= 0)
+        {
+            shutdown(socketId, SHUT_RDWR);
+            close(socketId);
+            socketId = -1;
+        }
+        if (threadRes.joinable())
+            threadRes.join();
         uart.close(); // 串口通信关闭
     }
 

@@ -8,8 +8,7 @@
 #include <mutex>
 
 // Unified diagnostics for YFork, Station and final vehicle-control output.
-// All writers share one stream so a single yfork.log contains the complete
-// cause-and-effect chain for every frame.
+// The log is truncated when a new process/session starts.
 inline FILE *&yforkDiagFile()
 {
     static FILE *fp = nullptr;
@@ -68,7 +67,7 @@ inline void yforkDiagVLog(const char *source, const char *fmt, va_list args)
         return;
     FILE *&fp = yforkDiagFile();
     if (!fp)
-        fp = fopen("./yfork.log", "a");
+        fp = fopen("./yfork.log", "w");
     if (!fp)
         return;
 

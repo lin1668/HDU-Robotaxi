@@ -74,6 +74,13 @@ void FsmBusy::run(Mat &img)
     if (!params->config.busy) // 该模式未启用
         return;
 
+    const bool busyStopFinishedThisLap =
+        params->busyZone &&
+        params->stationStopCompleted &&
+        params->config.currentLapConfig &&
+        params->config.currentLapConfig->busyStopEnable &&
+        params->config.currentLapConfig->busyStopPoint > 0;
+
     // 帧计数器递增
     frameCount++;
 
@@ -117,7 +124,7 @@ void FsmBusy::run(Mat &img)
                     if (params->results[i].type == LABEL_LEFT &&
                         params->results[i].width < 100 &&
                         params->results[i].height < 120 &&
-                        (params->results[i].y + params->results[i].height / 2) > ROWSIMAGE * 0.40)
+                        (params->results[i].y + params->results[i].height / 2) > ROWSIMAGE * 0.35)
                     {
                         leftQualified = true;
                         break;
@@ -205,6 +212,17 @@ void FsmBusy::run(Mat &img)
         {
             if (params->results[i].height < 130 && params->results[i].width < 100)
             {
+                if (busyStopFinishedThisLap)
+                {
+                    // Current lap busy stop is already done. Keep waiting for exit LEFT,
+                    // but ignore residual/false BUSY labels so we do not stop or enter
+                    // manual takeover again. resetLap() clears stationStopCompleted, so
+                    // a later lap with another busy task can still be detected normally.
+                    countRec = 0;
+                    countSes = 0;
+                    continue;
+                }
+
                 countRec++;
                 countSes = 0; // 复位会话计数器，防止连续检测时意外清零
                 timeout = 0;
@@ -213,6 +231,9 @@ void FsmBusy::run(Mat &img)
                 if (countRec > 2)
                 {
                     // 已确认进入施工区，后续由 velBusy 控速，不再保留斑马线后的预检降速。
+                    if (params->ctrl.busyCrossSlow)
+                        cout << "[Busy] BUSY_CROSS_SLOW RELEASED lap=" << params->currentLap
+                             << " reason=busy_confirmed countRec=" << countRec << endl;
                     params->ctrl.busyCrossSlow = false;
                     if (!drivingThrough)
                     { // 行驶通过模式不重新停车

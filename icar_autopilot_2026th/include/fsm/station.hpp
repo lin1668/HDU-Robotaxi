@@ -73,19 +73,21 @@ private:
         static constexpr int BUSY_ENTRY_DELAY_FRAMES = 0;    // 手动接管结束后，施工区延迟检测帧数
         static constexpr float BUSY_FIRST_BOX_RATIO = 0.75f;   // 施工区第一个框触发位置
         static constexpr int BUSY_TARGET_BOTTOM_MARGIN = 70;  // 施工区目标框距离底部触发余量，增大可提前停车
-        static constexpr int BUSY_FIRST_PRESS_FRAMES = 26;    // 第一个框首次触发后继续行驶的帧数
+        static constexpr int BUSY_FIRST_PRESS_FRAMES = 24;    // 第一个框首次触发后继续行驶的帧数
+        static constexpr int BUSY_FIRST_GUIDE_LEFT_OFFSET = 16; // 第一个框停车前巡线整体左移像素
         static constexpr int BUSY_TARGET_PRESS_FRAMES = 26;   // 施工区目标框压框后停车等待帧数
         static constexpr int BUSY_SKIP_LOCK_FRAMES = 15;      // 跳过首框后固定屏蔽帧数，不再等待框消失
         static constexpr int BUSY_COOLDOWN_FRAMES = 2;        // 施工区停车后冷却帧数
 
         // 左岔路
         static constexpr float LEFT_BRANCH_TRIGGER_RATIO = 0.40f;
-        static constexpr int LEFT_BRANCH_DELAY_FRAMES = 12;
-        static constexpr int LEFT_BRANCH_PRESS_FRAMES = 26;
+        static constexpr int LEFT_BRANCH_DELAY_FRAMES = 19;
+        static constexpr int LEFT_BRANCH_PRESS_FRAMES = 16;
+        static constexpr int LEFT_BRANCH_FALLBACK_PRESS_FRAMES = 25; // 仅STATION_BOX兜底触发时使用，正常YFork不变
 
         // 右岔路：沿用当前已验证的停车时机；后续只调这里即可，不影响普通路线。
-        static constexpr int RIGHT_BRANCH_TRIGGER_BOTTOM_MARGIN = 50;
-        static constexpr int RIGHT_BRANCH_PRESS_FRAMES = 17;
+        static constexpr int RIGHT_BRANCH_TRIGGER_BOTTOM_MARGIN = 63;
+        static constexpr int RIGHT_BRANCH_PRESS_FRAMES = 16;
 
     };
 

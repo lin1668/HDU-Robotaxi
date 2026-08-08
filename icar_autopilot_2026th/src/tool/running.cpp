@@ -266,7 +266,7 @@ public:
         if (params->config.debug)
             capture = make_shared<cv::VideoCapture>(params->config.video); // 打开本地视频
         else
-            capture = make_shared<cv::VideoCapture>("/dev/video0"); // 打开摄像头
+            capture = make_shared<cv::VideoCapture>("/dev/v4l/by-id/usb-XCX-230919-H_PC_Camera_A4-video-index0"); // 打开摄像头
         if (!capture->isOpened())
         {
             printf("[Error]: Can not open video device!!!\n");

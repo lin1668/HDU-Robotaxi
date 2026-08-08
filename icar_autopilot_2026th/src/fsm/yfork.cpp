@@ -27,6 +27,16 @@
 #include <ctime>
 #include <string>
 
+// TEMP fallback test switch:
+// true: disable normal LABEL_FORK detection and only test STATION_BOX fallback.
+// Set back to false after the left/right fallback test.
+static constexpr bool TEST_DISABLE_NORMAL_YFORK_DETECT = false;
+static constexpr bool ENABLE_LEFT_STATION_BOX_FALLBACK = true;   // 左分支启用虚线框/STATION_BOX兜底，FORK漏检时仍可强制左转
+static constexpr bool ENABLE_RIGHT_STATION_BOX_FALLBACK = true;  // 右分支启用虚线框/STATION_BOX兜底：FORK漏检时仍可进入右停车链
+static constexpr int STATION_BOX_FALLBACK_FORCE_LEFT_DELAY = 0;
+static constexpr int STATION_BOX_FALLBACK_FORCE_LEFT_FRAMES = 26;
+static int activeForceLeftTotalFrames = 16;
+
 // 所有YFork事件统一写入带毫秒和行号的诊断日志。
 static void ylog(const char *fmt, ...)
 {
@@ -174,9 +184,44 @@ void FsmYfork::run(Mat &img)
         params->ctrl.yforkReset = false;
     }
 
+    // 停完车后退出YFork模式，让车恢复正常巡线（仅YFork已完成时关闭）
+    if (params->stationStopCompleted && completed)
+    {
+        enable = false;
+        params->yforkBranch = 0;
+        params->yforkGuiding = false;
+        if (!exitRightBiasArmed)
+        {
+            params->ctrl.yforkExitCooldown = 0; // 停车完成后立即解除YFork限速，交给正常巡线恢复速度
+            exitRightBiasArmed = true;
+        }
+        return;
+    }
+
     // 非NORMAL/YFORK模式下不干扰其他FSM（如停车区内的fork地面箭头）
     if (params->mode != FsmMode::NORMAL && params->mode != FsmMode::YFORK)
         return;
+
+    {
+        static bool lastStationStarted = false;
+        static bool lastStationDone = false;
+        static bool lastGuiding = false;
+        if (lastStationStarted != params->stationStarted ||
+            lastStationDone != params->stationStopCompleted ||
+            lastGuiding != params->yforkGuiding)
+        {
+            ylog("[Yfork] SHARED_STATE_CHANGE stationStarted %d->%d stationDone %d->%d guiding %d->%d branch=%d step=%d forceLeft=%d timeout=%d mode=%d stop=%d speed=%.3f",
+                 lastStationStarted, params->stationStarted,
+                 lastStationDone, params->stationStopCompleted,
+                 lastGuiding, params->yforkGuiding,
+                 params->yforkBranch, static_cast<int>(step), forceLeftTimer,
+                 timeout, static_cast<int>(params->mode), params->ctrl.stop,
+                 params->ctrl.speed);
+            lastStationStarted = params->stationStarted;
+            lastStationDone = params->stationStopCompleted;
+            lastGuiding = params->yforkGuiding;
+        }
+    }
 
     logFrame("PRE");
 
@@ -287,6 +332,7 @@ void FsmYfork::reset(void)
     holdRow = 0;
     holdCol = 0;
     forceLeftTimer = 0;
+    activeForceLeftTotalFrames = FORCE_LEFT_FRAMES;
     forkForceLeftTimer = 0;
     forkAutoStopTimer = 0;
     yforkParkStopCount = 0;
@@ -294,6 +340,7 @@ void FsmYfork::reset(void)
     params->stationStopCompleted = false;
     params->stationStarted = false;
     params->yforkGuiding = false;
+    params->yforkStationBoxFallback = false;
     // 当前 Yfork 任务尚未完成时保留分支，供 station 使用；finish() 与 resetLap() 清零。
 }
 
@@ -304,6 +351,8 @@ void FsmYfork::finish()
     bool stationStopCompleted = params->stationStopCompleted;
     reset();
     completed = true;
+    params->ctrl.yforkExitCooldown = 90; // 正常完成 YFork 后约 4.5 秒靠右，避开左转盲区障碍
+    exitRightBiasArmed = true;
     params->stationStopCompleted = stationStopCompleted;
     params->yforkBranch = 0;
 }
@@ -313,6 +362,7 @@ void FsmYfork::resetLap()
     reset();
     completed = false; // 新圈重新检测
     forceLeftDone = false; // 新一圈重新允许强制左转
+    exitRightBiasArmed = false;
     params->yforkBranch = 0; // 新一圈清零
 }
 
@@ -338,6 +388,7 @@ void FsmYfork::deactivate()
     reset();
     completed = false;
     forceLeftDone = false;
+    exitRightBiasArmed = false;
     params->yforkBranch = 0;
 
     params->stationStopCompleted = stationStopCompleted;
@@ -375,6 +426,7 @@ bool FsmYfork::handle(Mat &img)
         // 仅当：yfork功能启用 && 当前圈有yfork && 走左分支 && 未执行过
         // 其他情况（右分支/无yfork/已完成）完全不触发，不影响正常巡线
         bool canForceLeft = params->config.yfork &&
+                            ENABLE_LEFT_STATION_BOX_FALLBACK &&
                             params->config.currentLapConfig->yfork &&
                             params->config.currentLapConfig->yforkLeft &&
                             !forceLeftDone &&
@@ -395,22 +447,38 @@ bool FsmYfork::handle(Mat &img)
                     {
                         selectLeft = true;
                         params->yforkBranch = 1;
+                        params->yforkGuiding = false;
+                        params->yforkStationBoxFallback = true;
                         forkSeen = true; // 检测到虚线框 = 检测到yfork
-                        forceLeftTimer = FORCE_LEFT_FRAMES;
+                        forkForceLeftTimer++;
+                        params->ctrl.speed = params->config.velYfork; // fallback frame also slows down before hard left
+                        if (forkForceLeftTimer <= STATION_BOX_FALLBACK_FORCE_LEFT_DELAY)
+                        {
+                            ylog("[Yfork] FORCE LEFT PATH=STATION_BOX_PRE_SLOW: timer=%d/%d box #%d cx=%d y=%d h=%d w=%d bottom=%d",
+                                 forkForceLeftTimer, STATION_BOX_FALLBACK_FORCE_LEFT_DELAY, stationCount, boxCx,
+                                 params->results[i].y, params->results[i].height,
+                                 params->results[i].width, boxBottom);
+                            return true;
+                        }
+                        forceLeftTimer = STATION_BOX_FALLBACK_FORCE_LEFT_FRAMES;
+                        activeForceLeftTotalFrames = STATION_BOX_FALLBACK_FORCE_LEFT_FRAMES;
                         forceLeftDone = true; // 标记已执行，防止重复触发
-                        params->yforkGuiding = true;
+                        params->yforkGuiding = false;
+                        forkForceLeftTimer = 0;
                         step = Step::ENTER;
                         counterYfork = 0;
                         timeout = 0;
                             ylog("[Yfork] FORCE LEFT PATH=STATION_BOX: box #%d cx=%d y=%d h=%d w=%d bottom=%d, forceFrames=%d -> ENTER",
                              stationCount, boxCx, params->results[i].y,
-                             params->results[i].height, params->results[i].width, boxBottom, FORCE_LEFT_FRAMES);
+                             params->results[i].height, params->results[i].width, boxBottom,
+                             STATION_BOX_FALLBACK_FORCE_LEFT_FRAMES);
                         return true;
                     }
                     else
                     {
-                        ylog("[Yfork] NONE: station box #%d cx=%d too small h=%d w=%d, skip",
-                             stationCount, boxCx, params->results[i].height, params->results[i].width);
+                        ylog("[Yfork] NONE: station box #%d cx=%d too small h=%d w=%d bottom=%d, skip",
+                             stationCount, boxCx, params->results[i].height, params->results[i].width,
+                             boxBottom);
                     }
                 }
             }
@@ -429,13 +497,110 @@ bool FsmYfork::handle(Mat &img)
             {
                 ylog("[Yfork] NONE: force left DISABLED (yfork=%d lapYfork=%d yforkLeft=%d forceLeftDone=%d)",
                      params->config.yfork, params->config.currentLapConfig->yfork,
-                     params->config.currentLapConfig->yforkLeft, forceLeftDone);
+                      params->config.currentLapConfig->yforkLeft, forceLeftDone);
+            }
+        }
+
+        // STATION_BOX 左分支兜底一旦启动，即使下一帧虚线框短暂丢失，也继续完成兜底触发；
+        // 否则会被后面的 V 尖普通 YFork 路径抢走，导致兜底专用停车参数失效。
+        if (params->yforkStationBoxFallback &&
+            ENABLE_LEFT_STATION_BOX_FALLBACK &&
+            params->config.currentLapConfig->yforkLeft &&
+            forkSeen &&
+            params->yforkBranch == 1 &&
+            !forceLeftDone &&
+            forkForceLeftTimer > 0)
+        {
+            forkForceLeftTimer++;
+            params->ctrl.speed = params->config.velYfork;
+            if (forkForceLeftTimer <= STATION_BOX_FALLBACK_FORCE_LEFT_DELAY)
+            {
+                ylog("[Yfork] FORCE LEFT PATH=STATION_BOX_ARMED_PRE_SLOW: timer=%d/%d",
+                     forkForceLeftTimer, STATION_BOX_FALLBACK_FORCE_LEFT_DELAY);
+                return true;
+            }
+
+            forceLeftTimer = STATION_BOX_FALLBACK_FORCE_LEFT_FRAMES;
+            activeForceLeftTotalFrames = STATION_BOX_FALLBACK_FORCE_LEFT_FRAMES;
+            forceLeftDone = true;
+            params->yforkGuiding = false;
+            forkForceLeftTimer = 0;
+            step = Step::ENTER;
+            counterYfork = 0;
+            timeout = 0;
+            ylog("[Yfork] FORCE LEFT PATH=STATION_BOX_ARMED: forceFrames=%d -> ENTER",
+                 STATION_BOX_FALLBACK_FORCE_LEFT_FRAMES);
+            return true;
+        }
+
+        // ===== 右分支兜底：FORK标志漏检时，虚线/停车框等效为已进入右YFork =====
+        // 这次日志里只看到 LABEL_STATION，没看到 LABEL_FORK；如果不先置 branch=2，
+        // Station 会被 waiting_yfork_branch 挡住，右分支停车链永远进不去。
+        bool rightValidForkVisible = false;
+        for (int i = 0; i < params->results.size(); i++)
+        {
+            if (TEST_DISABLE_NORMAL_YFORK_DETECT)
+                break;
+            if (params->results[i].type != LABEL_FORK)
+                continue;
+            int forkBottom = params->results[i].y + params->results[i].height;
+            if (params->results[i].height < 150 && params->results[i].width < 150 &&
+                params->results[i].height > 15 && params->results[i].width > 15 &&
+                forkBottom > ROWSIMAGE * 0.20)
+            {
+                rightValidForkVisible = true;
+                break;
+            }
+        }
+        const bool canRightStationFallback =
+            ENABLE_RIGHT_STATION_BOX_FALLBACK &&
+            params->config.yfork &&
+            params->config.currentLapConfig &&
+            params->config.currentLapConfig->yfork &&
+            !params->config.currentLapConfig->yforkLeft &&
+            !completed &&
+            !forkSeen &&
+            !rightValidForkVisible &&
+            params->yforkBranch == 0 &&
+            !params->stationStarted &&
+            !params->stationStopCompleted;
+        if (canRightStationFallback)
+        {
+            int stationCount = 0;
+            for (int i = 0; i < params->results.size(); i++)
+            {
+                if (params->results[i].type != LABEL_STATION)
+                    continue;
+                stationCount++;
+                int boxCx = params->results[i].x + params->results[i].width / 2;
+                int boxBottom = params->results[i].y + params->results[i].height;
+                if (params->results[i].height > 10 && params->results[i].width > 10 &&
+                    boxBottom > ROWSIMAGE * 0.25)
+                {
+                    selectLeft = false;
+                    params->yforkBranch = 2;
+                    params->yforkStationBoxFallback = false;
+                    forkSeen = true;
+                    params->yforkGuiding = false;
+                    holdRow = 0;
+                    holdCol = 0;
+                    vloss = true;
+                    vlossTimer = 999;
+                    step = Step::ENTER;
+                    counterYfork = 0;
+                    timeout = 0;
+                    countRes = 0;
+                    ylog("[Yfork] RIGHT FALLBACK=STATION_BOX: box #%d cx=%d y=%d h=%d w=%d bottom=%d -> branch=2 ENTER(no artificial guide)",
+                         stationCount, boxCx, params->results[i].y,
+                         params->results[i].height, params->results[i].width, boxBottom);
+                    return true;
+                }
             }
         }
 
         // ===== FORK强制左转：FORK到比例后延时触发（与虚线框互为双保险）=====
         bool canForkForce = params->config.currentLapConfig->yforkLeft && !forceLeftDone;
-        if (detectYfork(img))
+        if (!TEST_DISABLE_NORMAL_YFORK_DETECT && detectYfork(img))
         {
             forkSeen = true;
             params->yforkGuiding = true;
@@ -471,7 +636,9 @@ bool FsmYfork::handle(Mat &img)
                     int triggerTimer = forkForceLeftTimer;
                     selectLeft = true;
                     params->yforkBranch = 1;
+                    params->yforkStationBoxFallback = false;
                     forceLeftTimer = FORCE_LEFT_FRAMES;
+                    activeForceLeftTotalFrames = FORCE_LEFT_FRAMES;
                     forceLeftDone = true;
                     forkForceLeftTimer = 0;
                     forkAutoStopTimer = 1;
@@ -522,9 +689,11 @@ bool FsmYfork::handle(Mat &img)
     {
         selectLeft = params->config.currentLapConfig->yforkLeft;
         params->yforkBranch = selectLeft ? 1 : 2;
-        params->yforkGuiding = true; // 进入引导前阻止station
+        params->yforkStationBoxFallback = params->yforkStationBoxFallback && selectLeft;
+        params->yforkGuiding = !params->yforkStationBoxFallback; // 只有正常YFork引导时阻止station；STATION_BOX兜底不做左引导
 
-        ylog("[Yfork] DECIDE: selectLeft=%d branch=%d -> ENTER", selectLeft, params->yforkBranch);
+        ylog("[Yfork] DECIDE: selectLeft=%d branch=%d fallback=%d -> ENTER",
+             selectLeft, params->yforkBranch, params->yforkStationBoxFallback);
         step = Step::ENTER;
         counterYfork = 0;
         timeout = 0;
@@ -536,7 +705,14 @@ bool FsmYfork::handle(Mat &img)
         counterYfork++;
         timeout++;
 
+        const bool stationBoxFallbackLeft = params->yforkStationBoxFallback && selectLeft;
+        const bool guidingBeforeReplan = params->yforkGuiding;
         replanTracking(selectLeft, img);
+        if (guidingBeforeReplan != params->yforkGuiding)
+            ylog("[Yfork] ENTER: guiding changed by replan %d->%d stationBoxFallbackLeft=%d selectLeft=%d forceLeft=%d hold=(%d,%d) vloss=%d vlossTimer=%d branch=%d",
+                 guidingBeforeReplan, params->yforkGuiding, stationBoxFallbackLeft,
+                 selectLeft, forceLeftTimer, holdRow, holdCol, vloss, vlossTimer,
+                 params->yforkBranch);
 
         // ===== 强制左转：在 forceLeftTimer > 0 期间，用贝塞尔曲线强行拉左边缘 =====
         if (forceLeftTimer > 0)
@@ -549,10 +725,15 @@ bool FsmYfork::handle(Mat &img)
             vector<PointX> leftPoints = {leftStart, leftMid, leftEnd};
             params->track->pointsEdgeLeft = Bezier(0.02f, leftPoints);
 
-            const int forceFrame = FORCE_LEFT_FRAMES - forceLeftTimer;
-            if (forceFrame == 1 || forceLeftTimer == 0)
-                ylog("[Yfork] ENTER: FORCE LEFT frame=%d/%d (remaining=%d), Bezier left edge start=(%d,%d) end=(%d,%d)",
-                     forceFrame, FORCE_LEFT_FRAMES, forceLeftTimer,
+            const int forceFrame = activeForceLeftTotalFrames - forceLeftTimer;
+            if (forceFrame == 1 || forceFrame % 4 == 0 || forceLeftTimer == 0)
+                ylog("[Yfork] ENTER: FORCE LEFT frame=%d/%d remaining=%d guiding=%d stationStarted=%d stationDone=%d stop=%d stationBoxFallbackLeft=%d hold=(%d,%d) vloss=%d vlossTimer=%d leftEdge=%zu rightEdge=%zu leftGuide=(%d,%d)->(%d,%d)",
+                     forceFrame, activeForceLeftTotalFrames, forceLeftTimer,
+                     params->yforkGuiding, params->stationStarted,
+                     params->stationStopCompleted, params->ctrl.stop,
+                     stationBoxFallbackLeft, holdRow, holdCol, vloss, vlossTimer,
+                     params->track->pointsEdgeLeft.size(),
+                     params->track->pointsEdgeRight.size(),
                      leftStart.x, leftStart.y, leftEnd.x, leftEnd.y);
 
             if (forceLeftTimer == 0)
@@ -560,8 +741,24 @@ bool FsmYfork::handle(Mat &img)
         }
 
         // 与上游逻辑一致：V尖消失后前5帧屏蔽station，之后一边保持引导一边搜索停车框。
-        const int stationBlockFrames = 5;
-        params->yforkGuiding = (holdRow > 0) && (!vloss || vlossTimer < stationBlockFrames);
+        const int stationBlockFrames = 2;
+        const bool guidingBeforeStationGate = params->yforkGuiding;
+        const bool keepGuidingByVTip = (holdRow > 0) && (!vloss || vlossTimer < stationBlockFrames);
+        const bool keepGuidingByForceLeft = forceLeftTimer > 0;
+        // 强制左转还没跑完时继续屏蔽 Station，避免停车框提前接管打断左拉。
+        params->yforkGuiding = !stationBoxFallbackLeft && (keepGuidingByVTip || keepGuidingByForceLeft);
+        if (guidingBeforeStationGate != params->yforkGuiding)
+            ylog("[Yfork] ENTER: guiding station-gate %d->%d forceLeft=%d keepByForce=%d keepByVTip=%d selectLeft=%d stationBoxFallbackLeft=%d hold=(%d,%d) vloss=%d vlossTimer=%d blockFrames=%d stationStarted=%d stationDone=%d",
+                 guidingBeforeStationGate, params->yforkGuiding, forceLeftTimer,
+                 keepGuidingByForceLeft, keepGuidingByVTip, selectLeft,
+                 stationBoxFallbackLeft, holdRow, holdCol, vloss, vlossTimer,
+                 stationBlockFrames, params->stationStarted,
+                 params->stationStopCompleted);
+        if (forceLeftTimer > 0 && params->yforkGuiding && !keepGuidingByVTip && !stationBoxFallbackLeft)
+            ylog("[Yfork] ENTER: keep guiding because FORCE LEFT still active forceLeft=%d/%d selectLeft=%d hold=(%d,%d) vloss=%d vlossTimer=%d blockFrames=%d stationStarted=%d stationDone=%d",
+                 forceLeftTimer, activeForceLeftTotalFrames, selectLeft,
+                 holdRow, holdCol, vloss, vlossTimer, stationBlockFrames,
+                 params->stationStarted, params->stationStopCompleted);
 
         // 左岔路：V尖消失后左边线突变 → 已右拐驶出岔路
         //   - 当前圈启用了station时：阻止突变退出，等先停好车
@@ -601,8 +798,8 @@ bool FsmYfork::handle(Mat &img)
             countRes = cur;
         }
 
-        // 超时退出（启用了station等多等帧等停车+突变）
-        int exitTimeout = stationEnabled ? 200 : 120;
+        // 启用station时也只等待120帧，避免长期停留在YFORK减速状态。
+        int exitTimeout = 150;
         if (timeout > exitTimeout)
         {
             ylog("[Yfork] ENTER: TIMEOUT timeout=%d > %d (station=%d) -> EXIT",
@@ -784,11 +981,14 @@ void FsmYfork::replanTracking(bool left, const Mat &img)
         }
     }
 
-    // 右分支始终使用预处理得到的自然左右边线巡线。
-    // 实车日志表明，极左侧误检 V 尖会让人工左边线持续把车辆拉出右边界；
-    // 右分支只保留 V 尖/引导状态更新，不写入人工边线。
+    // 右分支保留自然边线，只将有效左边线轻微右移，使控制中心小幅靠右。
+    // 不重建人工边线，避免极左侧误检V尖时产生过强右转。
     if (!left)
+    {
+        for (auto &point : params->track->pointsEdgeLeft)
+            point.y = min(point.y + RIGHT_GUIDE_OFFSET, COLSIMAGE - 1);
         return;
+    }
 
     if (left)
     {

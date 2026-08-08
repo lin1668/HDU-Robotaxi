@@ -19,11 +19,11 @@
     "rowCutUp": 10,
     "rowCutBottom": 15,
     "overlap": 0.3,
-    "score": 0.18,
+    "score": 0.2,
     "binary": -1,
     "model": "../res/models/yolov3_mobilenet_v1",
     "video": "../res/samples/sample.mp4",
-    "alertTarget": "park"
+    "alertTarget": "cone"
   },
   "圈数配置": {
     "totalLaps": 3,
@@ -42,7 +42,7 @@
       "curve": false,
       "fine": false,
       "yfork": true,
-      "yforkLeft": true,
+      "yforkLeft": false,
       "manualTakeover": false,
       "busyStopEnable": false,
       "busyStopPoint": 0
@@ -62,11 +62,11 @@
       "yforkLeft": false,
       "manualTakeover": true,
       "busyStopEnable": true,
-      "busyStopPoint": 2
+      "busyStopPoint": 1
     },
     "lap3": {
       "park": true,
-      "parkSpot": 3,
+      "parkSpot": 4,
       "busy": false,
       "fork": false,
       "slow": true,
